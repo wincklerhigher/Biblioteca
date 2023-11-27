@@ -1,4 +1,4 @@
 #bin e obj diretórios
 bin/
 obj/
-Biblioteca.sln
+*.sln
