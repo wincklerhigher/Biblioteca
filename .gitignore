@@ -1,6 +1,0 @@
-#bin e obj diretórios
-bin/
-obj/
-
-#entity framework migrations
-Migrations/
