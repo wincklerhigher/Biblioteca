@@ -36,8 +36,8 @@ namespace Biblioteca.Controllers
             }
             return RedirectToAction("Listagem");
         }
-
     public IActionResult Listagem(string tipoFiltro, string filtro){
+        
     FiltrosEmprestimos objFiltro = null;
 
     if (!string.IsNullOrEmpty(filtro))
@@ -45,18 +45,22 @@ namespace Biblioteca.Controllers
         objFiltro = new FiltrosEmprestimos();
         objFiltro.Filtro = filtro;
         objFiltro.TipoFiltro = tipoFiltro;
+        
+        if (tipoFiltro == "Usuario")
+        {            
+            EmprestimoService emprestimoService = new EmprestimoService();
+            var filteredEmprestimos = emprestimoService.ListarTodos(objFiltro)
+                .Where(e => e.NomeUsuario.Contains(filtro, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+
+            return View(filteredEmprestimos);
+        }
     }
 
-    EmprestimoService emprestimoService = new EmprestimoService();
-    IEnumerable<Emprestimo> emprestimos = emprestimoService.ListarTodos(objFiltro);
-    
-    if (tipoFiltro == "Livro")
-    {
-        emprestimos = emprestimos.Where(e => e.Livro != null && e.Livro.Titulo.Contains(filtro));
-    }
+        EmprestimoService service = new EmprestimoService(); 
+        return View(service.ListarTodos(objFiltro));
+        }
 
-    return View(emprestimos);
-    }
         public IActionResult Edicao(int id)
         {
             LivroService livroService = new LivroService();

@@ -1,4 +1,3 @@
-@using Biblioteca.Models
 @model IEnumerable<Emprestimo>
 
 @{
@@ -33,6 +32,7 @@
                     <th>Data Devolução</th>
                     <th>Livro</th>
                     <th>Autor</th>
+                    <th>Ações</th>
                     <th></th>
                 </tr>
             </thead>
@@ -46,7 +46,10 @@
                         <td>@(e.DataDevolucao.HasValue ? e.DataDevolucao.Value.ToString("dd/MM/yyyy") : "")</td>
                         <td>@(e.Livro != null ? e.Livro.Titulo : "")</td>
                         <td>@(e.Livro != null ? e.Livro.Autor : "")</td>
-                        <td><a href="/Emprestimo/Edicao/@e.Id">Editar</a></td>
+                        <td>
+                            <a href="/Emprestimo/Edicao/@e.Id">Editar</a>
+                            <a href="/Emprestimo/Apagar/@e.Id">Apagar</a>
+                        </td>
                     </tr>
                 }
             </tbody>
