@@ -2,6 +2,8 @@ using Biblioteca.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
+using System.Collections.Generic;
+using System.Linq;
 using System;
 
 namespace Biblioteca.Controllers
@@ -35,19 +37,26 @@ namespace Biblioteca.Controllers
             return RedirectToAction("Listagem");
         }
 
-        public IActionResult Listagem(string tipoFiltro, string filtro)
-        {
-            FiltrosEmprestimos objFiltro = null;
-            if(!string.IsNullOrEmpty(filtro))
-            {
-                objFiltro = new FiltrosEmprestimos();
-                objFiltro.Filtro = filtro;
-                objFiltro.TipoFiltro = tipoFiltro;
-            }
-            EmprestimoService emprestimoService = new EmprestimoService();
-            return View(emprestimoService.ListarTodos(objFiltro));
-        }
+    public IActionResult Listagem(string tipoFiltro, string filtro){
+    FiltrosEmprestimos objFiltro = null;
 
+    if (!string.IsNullOrEmpty(filtro))
+    {
+        objFiltro = new FiltrosEmprestimos();
+        objFiltro.Filtro = filtro;
+        objFiltro.TipoFiltro = tipoFiltro;
+    }
+
+    EmprestimoService emprestimoService = new EmprestimoService();
+    IEnumerable<Emprestimo> emprestimos = emprestimoService.ListarTodos(objFiltro);
+    
+    if (tipoFiltro == "Livro")
+    {
+        emprestimos = emprestimos.Where(e => e.Livro != null && e.Livro.Titulo.Contains(filtro));
+    }
+
+    return View(emprestimos);
+    }
         public IActionResult Edicao(int id)
         {
             LivroService livroService = new LivroService();
