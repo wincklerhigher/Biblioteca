@@ -19,19 +19,3 @@
     <button type="submit" class="btn btn-danger">Confirmar Exclusão</button>
     <a asp-action="Listagem" class="btn btn-secondary">Cancelar</a>
 </form>
-
-<p id="mensagem-confirmacao" style="display:none;">Exclusão confirmada com sucesso!</p>
-<a id="voltar-listagem" asp-action="Listagem" class="btn btn-primary" style="display:none;">Voltar para a Listagem</a>
-
-@section scripts {
-    
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            var form = document.querySelector('form');
-            form.addEventListener('submit', function () {
-                document.getElementById('mensagem-confirmacao').style.display = 'block';
-                document.getElementById('voltar-listagem').style.display = 'inline-block';
-            });
-        });
-    </script>
-}
