@@ -18,22 +18,29 @@ namespace Biblioteca.Controllers
             return View(cadModel);
         }
 
-        [HttpPost]
-        public IActionResult Cadastro(CadEmprestimoViewModel viewModel)
-        {
-            EmprestimoService emprestimoService = new EmprestimoService();
+    [HttpPost]
+    public IActionResult Cadastro(CadEmprestimoViewModel viewModel){
+    
+    if (string.IsNullOrWhiteSpace(viewModel.Emprestimo.NomeUsuario) ||
+        string.IsNullOrWhiteSpace(viewModel.Emprestimo.Telefone) ||
+        viewModel.Emprestimo.DataEmprestimo == null ||
+        viewModel.Emprestimo.DataDevolucao == null)
+    {
+        return View(viewModel);
+    }
+    EmprestimoService emprestimoService = new EmprestimoService();
 
-            if (viewModel.Emprestimo.Id == 0)
-            {
-                emprestimoService.Inserir(viewModel.Emprestimo);
-            }
-            else
-            {
-                emprestimoService.Atualizar(viewModel.Emprestimo);
-            }
-            return RedirectToAction("Listagem");
-        }
+    if (viewModel.Emprestimo.Id == 0)
+    {
+        emprestimoService.Inserir(viewModel.Emprestimo);
+    }
+    else
+    {
+        emprestimoService.Atualizar(viewModel.Emprestimo);
+    }
 
+        return RedirectToAction("Listagem");
+}
         public IActionResult Listagem(string tipoFiltro, string filtro)
         {
             FiltrosEmprestimos objFiltro = null;
