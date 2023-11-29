@@ -2,13 +2,10 @@ using Biblioteca.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
-using System.Collections.Generic;
-using System.Linq;
 using System;
 
 namespace Biblioteca.Controllers
 {
-    
     public class EmprestimoController : Controller
     {
         public IActionResult Cadastro()
@@ -25,8 +22,8 @@ namespace Biblioteca.Controllers
         public IActionResult Cadastro(CadEmprestimoViewModel viewModel)
         {
             EmprestimoService emprestimoService = new EmprestimoService();
-            
-            if(viewModel.Emprestimo.Id == 0)
+
+            if (viewModel.Emprestimo.Id == 0)
             {
                 emprestimoService.Inserir(viewModel.Emprestimo);
             }
@@ -36,29 +33,18 @@ namespace Biblioteca.Controllers
             }
             return RedirectToAction("Listagem");
         }
-    public IActionResult Listagem(string tipoFiltro, string filtro){
-        
-    FiltrosEmprestimos objFiltro = null;
 
-    if (!string.IsNullOrEmpty(filtro))
-    {
-        objFiltro = new FiltrosEmprestimos();
-        objFiltro.Filtro = filtro;
-        objFiltro.TipoFiltro = tipoFiltro;
-        
-        if (tipoFiltro == "Usuario")
-        {            
+        public IActionResult Listagem(string tipoFiltro, string filtro)
+        {
+            FiltrosEmprestimos objFiltro = null;
+            if (!string.IsNullOrEmpty(filtro))
+            {
+                objFiltro = new FiltrosEmprestimos();
+                objFiltro.Filtro = filtro;
+                objFiltro.TipoFiltro = tipoFiltro;
+            }
             EmprestimoService emprestimoService = new EmprestimoService();
-            var filteredEmprestimos = emprestimoService.ListarTodos(objFiltro)
-                .Where(e => e.NomeUsuario.Contains(filtro, StringComparison.OrdinalIgnoreCase))
-                .ToList();
-
-            return View(filteredEmprestimos);
-        }
-    }
-
-        EmprestimoService service = new EmprestimoService(); 
-        return View(service.ListarTodos(objFiltro));
+            return View(emprestimoService.ListarTodos(objFiltro));
         }
 
         public IActionResult Edicao(int id)
@@ -70,8 +56,43 @@ namespace Biblioteca.Controllers
             CadEmprestimoViewModel cadModel = new CadEmprestimoViewModel();
             cadModel.Livros = livroService.ListarTodos();
             cadModel.Emprestimo = e;
-            
+
             return View(cadModel);
         }
+
+    public IActionResult Apagar(int id)
+{
+    EmprestimoService emprestimoService = new EmprestimoService();
+    Emprestimo emprestimo = emprestimoService.ObterPorId(id);
+
+    if (emprestimo == null)
+    {
+        return NotFound();
+    }         
+
+    return View(emprestimo);
+}
+
+    public IActionResult ConfirmarApagar(int id)
+{
+    EmprestimoService emprestimoService = new EmprestimoService();
+    Emprestimo emprestimo = emprestimoService.ObterPorId(id);
+
+    if (emprestimo == null)
+    {
+        return NotFound();
+    }
+
+        return View(emprestimo);
+}
+
+        [HttpPost]
+public IActionResult ApagarConfirmado(int id)
+{    
+    EmprestimoService emprestimoService = new EmprestimoService();
+    emprestimoService.Apagar(id);
+
+    return RedirectToAction("Listagem");
+}
     }
 }

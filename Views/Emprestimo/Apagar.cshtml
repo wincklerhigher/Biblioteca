@@ -1,0 +1,37 @@
+@model Emprestimo
+
+@{
+    ViewData["Title"] = "Apagar Empréstimo";
+}
+
+<div class="container">
+    <h2>Tem certeza que deseja apagar este empréstimo?</h2>
+
+    <dl class="row">
+        <dt class="col-sm-2">Id</dt>
+        <dd class="col-sm-10">@Model.Id</dd>
+
+        <dt class="col-sm-2">Usuario</dt>
+        <dd class="col-sm-10">@Model.NomeUsuario</dd>
+
+        <dt class="col-sm-2">Data Empréstimo</dt>
+        <dd class="col-sm-10">@Model.DataEmprestimo.ToString("dd/MM/yyyy")</dd>
+
+        <dt class="col-sm-2">Data Devolução</dt>
+        <dd class="col-sm-10">
+            @(Model.DataDevolucao.HasValue ? Model.DataDevolucao.Value.ToString("dd/MM/yyyy") : "")
+        </dd>
+
+        <dt class="col-sm-2">Livro</dt>
+        <dd class="col-sm-10">@Model.Livro?.Titulo</dd>
+        
+        <dt class="col-sm-2">Autor</dt>
+        <dd class="col-sm-10">@Model.Livro?.Autor</dd>
+    </dl>
+
+    <form asp-controller="Emprestimo" asp-action="ApagarConfirmado" method="post">
+        <input type="hidden" asp-for="Id" />
+        <button type="submit" class="btn btn-danger">Confirmar Exclusão</button>
+        <a asp-action="Listagem" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>

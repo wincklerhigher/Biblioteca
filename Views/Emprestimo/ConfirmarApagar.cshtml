@@ -1,0 +1,37 @@
+@model Emprestimo
+
+@{
+    ViewData["Title"] = "Confirmação de Exclusão";
+}
+
+<h2>Tem certeza que deseja apagar este empréstimo?</h2>
+
+<dl class="row">
+    <dt class="col-sm-2">Id</dt>
+    <dd class="col-sm-10">@Model.Id</dd>
+
+    <dt class="col-sm-2">Usuario</dt>
+    <dd class="col-sm-10">@Model.NomeUsuario</dd>    
+</dl>
+
+<form asp-controller="Emprestimo" asp-action="ApagarConfirmado" method="post">
+    <input type="hidden" asp-for="Id" />
+    <button type="submit" class="btn btn-danger">Confirmar Exclusão</button>
+    <a asp-action="Listagem" class="btn btn-secondary">Cancelar</a>
+</form>
+
+<p id="mensagem-confirmacao" style="display:none;">Exclusão confirmada com sucesso!</p>
+<a id="voltar-listagem" asp-action="Listagem" class="btn btn-primary" style="display:none;">Voltar para a Listagem</a>
+
+@section scripts {
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var form = document.querySelector('form');
+            form.addEventListener('submit', function () {
+                document.getElementById('mensagem-confirmacao').style.display = 'block';
+                document.getElementById('voltar-listagem').style.display = 'inline-block';
+            });
+        });
+    </script>
+}

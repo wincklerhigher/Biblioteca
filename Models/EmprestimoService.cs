@@ -45,5 +45,19 @@ namespace Biblioteca.Models
                 return bc.Emprestimos.Find(id);
             }
         }
+
+        public void Apagar(int id)
+        {
+            using (BibliotecaContext bc = new BibliotecaContext())
+            {
+                Emprestimo emprestimo = bc.Emprestimos.Find(id);
+
+                if (emprestimo != null)
+                {
+                    bc.Emprestimos.Remove(emprestimo);
+                    bc.SaveChanges();
+                }
+            }
+        }
     }
 }

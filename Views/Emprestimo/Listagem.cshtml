@@ -6,7 +6,7 @@
 
 <div class="row">
     <div class="col-md-12">
-        <form class="form-inline" method="POST">
+        <form asp-controller="Emprestimo" asp-action="Listagem" method="POST" class="form-inline">
             <div class="form-group mb-2">
                 <select name="TipoFiltro" class="form-control">
                     <option value="Usuario">Usuário</option>
@@ -37,7 +37,7 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (Emprestimo e in Model)
+                @foreach (var e in Model)
                 {
                     <tr>
                         <td>@e.Id</td>
@@ -47,8 +47,12 @@
                         <td>@(e.Livro != null ? e.Livro.Titulo : "")</td>
                         <td>@(e.Livro != null ? e.Livro.Autor : "")</td>
                         <td>
-                            <a href="/Emprestimo/Edicao/@e.Id">Editar</a>
-                            <a href="/Emprestimo/Apagar/@e.Id">Apagar</a>
+                            <div>
+                            <a asp-controller="Emprestimo" asp-action="Edicao" asp-route-id="@e.Id">Editar</a>
+                            </div>
+                            <div>
+                            <a asp-controller="Emprestimo" asp-action="Apagar" asp-route-id="@e.Id">Apagar</a>
+                            </div>
                         </td>
                     </tr>
                 }
