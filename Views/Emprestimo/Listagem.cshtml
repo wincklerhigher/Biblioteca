@@ -1,5 +1,4 @@
-@model IEnumerable<Emprestimo>
-
+@model List<Emprestimo>
 @{
     ViewData["Title"] = "Listagem de Empréstimos";
 }
@@ -48,10 +47,10 @@
                         <td>@(e.Livro != null ? e.Livro.Autor : "")</td>
                         <td>
                             <div>
-                            <a asp-controller="Emprestimo" asp-action="Edicao" asp-route-id="@e.Id">Editar</a>
+                                <a asp-controller="Emprestimo" asp-action="Edicao" asp-route-id="@e.Id">Editar</a>
                             </div>
                             <div>
-                            <a asp-controller="Emprestimo" asp-action="Apagar" asp-route-id="@e.Id">Apagar</a>
+                                <a asp-controller="Emprestimo" asp-action="Apagar" asp-route-id="@e.Id">Apagar</a>
                             </div>
                         </td>
                     </tr>
@@ -60,3 +59,24 @@
         </table>
     </div>
 </div>
+
+<nav aria-label="Page navigation">
+    <ul class="pagination">
+        <li class="page-item @(ViewBag.CurrentPage == 1 ? "disabled" : "")">
+            <a class="page-link" href="/Emprestimo/Listagem?page=@(ViewBag.CurrentPage - 1)" aria-label="Previous">
+                <span aria-hidden="true">&laquo;</span>
+            </a>
+        </li>
+        @for (int i = 1; i <= ViewBag.TotalPages; i++)
+        {
+            <li class="page-item @(ViewBag.CurrentPage == i ? "active" : "")">
+                <a class="page-link" href="/Emprestimo/Listagem?page=@i">@i</a>
+            </li>
+        }
+        <li class="page-item @(ViewBag.CurrentPage == ViewBag.TotalPages ? "disabled" : "")">
+            <a class="page-link" href="/Emprestimo/Listagem?page=@(ViewBag.CurrentPage + 1)" aria-label="Next">
+                <span aria-hidden="true">&raquo;</span>
+            </a>
+        </li>
+    </ul>
+</nav>
