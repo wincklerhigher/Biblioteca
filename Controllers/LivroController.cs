@@ -1,10 +1,15 @@
+using System;
+using System.Collections.Generic;
 using Biblioteca.Models;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq;
 
 namespace Biblioteca.Controllers
 {
     public class LivroController : Controller
     {
+        private const int ItensPorPagina = 10;
+
         public IActionResult Cadastro()
         {
             Autenticacao.CheckLogin(this);
@@ -16,7 +21,7 @@ namespace Biblioteca.Controllers
         {
             LivroService livroService = new LivroService();
 
-            if(l.Id == 0)
+            if (l.Id == 0)
             {
                 livroService.Inserir(l);
             }
@@ -28,18 +33,28 @@ namespace Biblioteca.Controllers
             return RedirectToAction("Listagem");
         }
 
-        public IActionResult Listagem(string tipoFiltro, string filtro)
+        public IActionResult Listagem(int page = 1, string tipoFiltro = "", string filtro = "")
         {
             Autenticacao.CheckLogin(this);
-            FiltrosLivros objFiltro = null;
-            if(!string.IsNullOrEmpty(filtro))
-            {
-                objFiltro = new FiltrosLivros();
-                objFiltro.Filtro = filtro;
-                objFiltro.TipoFiltro = tipoFiltro;
-            }
+
+            FiltrosLivros objFiltro = !string.IsNullOrEmpty(filtro) ?
+                new FiltrosLivros { Filtro = filtro, TipoFiltro = tipoFiltro } :
+                null;
+
             LivroService livroService = new LivroService();
-            return View(livroService.ListarTodos(objFiltro));
+
+            var livros = livroService.ListarTodos(objFiltro).ToList();
+            var totalPaginas = (int)Math.Ceiling((double)livros.Count / ItensPorPagina);
+
+            page = Math.Max(1, Math.Min(page, totalPaginas));
+
+            var startIndex = (page - 1) * ItensPorPagina;
+            var livrosPaginados = livros.Skip(startIndex).Take(ItensPorPagina).ToList();
+
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = totalPaginas;
+
+            return View(livrosPaginados);
         }
 
         public IActionResult Edicao(int id)
