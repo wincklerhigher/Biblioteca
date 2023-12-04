@@ -20,14 +20,13 @@
         </form>
     </div>
 </div>
-
 <div class="row">
     <div class="col-md-12">
         <table class="table table-striped">
             <thead>
                 <tr>
-                    <th>Id</th>
-                    <th>Usuario</th>
+                    <th>Id</th>  
+                    <th>Usuario</th>                                     
                     <th>Data Empréstimo</th>
                     <th>Data Devolução</th>
                     <th>Livro</th>
@@ -37,11 +36,10 @@
                 </tr>
             </thead>
             <tbody>
-               @foreach (var e in Model.Emprestimos)
+             @foreach (var e in Model.Emprestimos)
 {   
     <tr>
-    <td class="@(e.ObterClasseDestaque()) bg-danger text-white">@e.NomeUsuario</td>
-        <td>@e.Id</td>
+        <td class="@((e.Estado == "Atrasado" && e.DataDevolucao < DateTime.Today) ? "bg-danger text-danger" : "")">@e.Id</td>
         <td>@e.NomeUsuario</td>
         <td>@e.DataEmprestimo.ToString("dd/MM/yyyy")</td>
         <td>@(e.DataDevolucao.HasValue ? e.DataDevolucao.Value.ToString("dd/MM/yyyy") : "")</td>
