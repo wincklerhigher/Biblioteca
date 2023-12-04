@@ -23,7 +23,7 @@ namespace Biblioteca.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("DataDevolucao")
+                    b.Property<DateTime?>("DataDevolucao")
                         .HasColumnType("datetime(6)");
 
                     b.Property<DateTime>("DataEmprestimo")
@@ -31,6 +31,9 @@ namespace Biblioteca.Migrations
 
                     b.Property<bool>("Devolvido")
                         .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("Estado")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<int>("LivroId")
                         .HasColumnType("int");
@@ -66,6 +69,25 @@ namespace Biblioteca.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Livros");
+                });
+
+            modelBuilder.Entity("Biblioteca.Models.Usuario", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Usuarios");
                 });
 
             modelBuilder.Entity("Biblioteca.Models.Emprestimo", b =>

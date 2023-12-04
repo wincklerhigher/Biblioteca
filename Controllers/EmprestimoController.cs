@@ -20,37 +20,33 @@ namespace Biblioteca.Controllers
         }
 
         [HttpPost]
-        public IActionResult Cadastro(CadEmprestimoViewModel viewModel)
-        {
-            if (string.IsNullOrWhiteSpace(viewModel.Emprestimo.NomeUsuario) ||
-                string.IsNullOrWhiteSpace(viewModel.Emprestimo.Telefone) ||
-                viewModel.Emprestimo.DataEmprestimo == null ||
-                viewModel.Emprestimo.DataDevolucao == null)
-            {
-                return View(viewModel);
-            }
+public IActionResult Cadastro(CadEmprestimoViewModel viewModel)
+{
+    if (!ModelState.IsValid)
+    {
+        return View(viewModel);
+    }
 
-            EmprestimoService emprestimoService = new EmprestimoService();
+    EmprestimoService emprestimoService = new EmprestimoService();
 
-            if (viewModel.Emprestimo.Id == 0)
-            {
-                emprestimoService.Inserir(viewModel.Emprestimo);
-            }
-            else
-            {
-                emprestimoService.Atualizar(viewModel.Emprestimo);
-            }
+    if (viewModel.Emprestimo.Id == 0)
+    {
+        emprestimoService.Inserir(viewModel.Emprestimo);
+    }
+    else
+    {
+        emprestimoService.Atualizar(viewModel.Emprestimo);
+    }
 
-            return RedirectToAction("Listagem");
-        }
-
-       public IActionResult ListarEmprestimos()
+    return RedirectToAction("Listagem");
+}
+     
+public IActionResult ListarEmprestimos()
 {
     EmprestimoService emprestimoService = new EmprestimoService();
     var emprestimosComDestaque = emprestimoService.ListarTodosComDestaque(null);
     return View(emprestimosComDestaque);
 }
-
         public IActionResult Listagem(int page = 1, string tipoFiltro = "", string filtro = "")
 {
     FiltrosEmprestimos objFiltro = null;
@@ -82,5 +78,53 @@ namespace Biblioteca.Controllers
 
     return View(viewModel);
 }
+ public IActionResult Edicao(int id)
+        {
+            LivroService livroService = new LivroService();
+            EmprestimoService em = new EmprestimoService();
+            Emprestimo e = em.ObterPorId(id);
+
+            CadEmprestimoViewModel cadModel = new CadEmprestimoViewModel();
+            cadModel.Livros = livroService.ListarTodos();
+            cadModel.Emprestimo = e;
+            
+            return View(cadModel);
+        }    
+        public IActionResult Apagar(int id)
+        {
+            EmprestimoService emprestimoService = new EmprestimoService();
+            Emprestimo emprestimo = emprestimoService.ObterPorId(id);
+
+            if (emprestimo == null)
+            {
+                return NotFound(); 
+            }
+
+            return View(emprestimo);
+        }
+
+        [HttpPost]
+        public IActionResult ConfirmarApagar(int id)
+        {
+            EmprestimoService emprestimoService = new EmprestimoService();
+            Emprestimo emprestimo = emprestimoService.ObterPorId(id);
+
+            if (emprestimo == null)
+            {
+                return NotFound(); 
+            }
+
+            emprestimoService.Apagar(id);
+
+            return RedirectToAction("Listagem");
+        }
+        [HttpPost]
+    public IActionResult ApagarConfirmado(int id)
+    {
+        EmprestimoService emprestimoService = new EmprestimoService();
+        emprestimoService.Apagar(id);
+
+        return RedirectToAction("Listagem");
     }
-}
+      }
+    }      
