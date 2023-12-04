@@ -1,0 +1,19 @@
+@model List<Emprestimo>
+
+<h1>Lista de Empréstimos</h1>
+
+<table>
+    <thead>
+        <tr>
+            <th>Nome do Usuário</th>            
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var emprestimo in Model)
+        {
+            <tr class="@emprestimo.ObterClasseDestaque()">
+                <td>@emprestimo.NomeUsuario</td>                
+            </tr>
+        }
+    </tbody>
+</table>
