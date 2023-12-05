@@ -173,11 +173,11 @@ namespace Biblioteca.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult LogoutConfirmed()
-        {
-            HttpContext.SignOutAsync();
-            return RedirectToAction("Index", "Home");
-        }
+[ValidateAntiForgeryToken]
+public IActionResult LogoutConfirmado()
+{
+    HttpContext.SignOutAsync(); 
+    return RedirectToAction("Login", "Home"); 
+}
     }
 }
