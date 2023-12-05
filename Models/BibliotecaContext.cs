@@ -15,7 +15,7 @@ namespace Biblioteca.Models
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {            
-            string connectionString = "Server=localhost;Database=Biblioteca;User=root;Password=;";
+            string connectionString ="Server=localhost;Database=Biblioteca;User=root;Password=;";
 
             optionsBuilder.UseMySql(connectionString, new MySqlServerVersion(new Version(8, 0, 23)));
         }

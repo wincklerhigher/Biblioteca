@@ -1,13 +1,12 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
+using Microsoft.AspNetCore.Identity;
+using Biblioteca.Models; 
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Biblioteca.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace Biblioteca
@@ -26,7 +25,7 @@ namespace Biblioteca
         {
             services.AddDbContext<BibliotecaContext>(options =>
             options.UseMySql(Configuration.GetConnectionString("DefaultConnection"),
-            new MySqlServerVersion(new Version(8, 0, 23))));
+            new MySqlServerVersion(new Version(8, 0, 23))));          
 
             services.AddControllersWithViews();
             services.AddDistributedMemoryCache();

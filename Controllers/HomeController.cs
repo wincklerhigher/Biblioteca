@@ -1,5 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
+using Microsoft.Extensions.Options;
+using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
@@ -18,7 +19,7 @@ namespace Biblioteca.Controllers
         {
             _logger = logger;
         }
-
+    
         public IActionResult Index()
         {
             Autenticacao.CheckLogin(this);
@@ -31,20 +32,23 @@ namespace Biblioteca.Controllers
         }
 
         [HttpPost]
-        public IActionResult Login(string login, string senha)
+public IActionResult Login(string login, string senha, [FromServices] DbContextOptions<BibliotecaContext> options)
+{
+    using (var contexto = new BibliotecaContext(options))
+    {
+        var usuario = contexto.Usuarios.FirstOrDefault(u => u.Login == login && u.Senha == senha);
+        if (usuario == null)
         {
-            if(login != "admin" || senha != "123")
-            {
-                ViewData["Erro"] = "Senha inválida";
-                return View();
-            }
-            else
-            {
-                HttpContext.Session.SetString("user", "admin");
-                return RedirectToAction("Index");
-            }
+            ViewData["Erro"] = "Senha inválida";
+            return View();
         }
-
+        else
+        {
+            HttpContext.Session.SetString("user", usuario.Login);
+            return RedirectToAction("Index");
+        }
+    }
+}
         public IActionResult Privacy()
         {
             return View();

@@ -4,7 +4,7 @@
 
 @if (Model != null && Model.Usuarios != null && Model.Usuarios.Any())
 {
-    var usuario = Model.Usuarios.FirstOrDefault(); // Assuming there's only one user in the list
+    var usuario = Model.Usuarios.FirstOrDefault(); 
     if (usuario != null)
     {
         <p>Tem certeza que deseja excluir o usuário abaixo?</p>
