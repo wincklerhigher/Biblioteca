@@ -15,7 +15,12 @@
     <label for="ConfirmarSenha">Confirmar Senha:</label>
     <input type="password" asp-for="ConfirmarSenha" required />
 
+    <label for="Tipo">Tipo:</label>
+    <select asp-for="Tipo" asp-items="Model.TiposDisponiveis">
+        <option value="">Selecione o tipo</option>
+    </select>
+
     <button type="submit">Registrar</button>
 </form>
 
-<a asp-action="Index">Cancelar</a>
+<a asp-action="ListaDeUsuarios">Cancelar</a>

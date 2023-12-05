@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using Biblioteca.Models;
 
 namespace Biblioteca.Models
 {
@@ -51,10 +52,10 @@ namespace Biblioteca.Models
         }
 
         public bool IsUsuarioAdmin(string login)
-        {
-            var usuario = ObterUsuarioPorLogin(login);
-            return usuario != null && usuario.Tipo == Usuario.ADMIN;
-        }
+{
+    var usuario = ObterUsuarioPorLogin(login);
+    return usuario != null && usuario.Tipo == UsuarioTipo.ADMIN;
+}
 
         public bool AutenticarUsuario(string login, string senha)
         {

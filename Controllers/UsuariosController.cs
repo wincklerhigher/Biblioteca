@@ -3,7 +3,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
+using System.Collections.Generic;
+using System.Linq;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Biblioteca.Controllers
 {
@@ -35,6 +37,36 @@ namespace Biblioteca.Controllers
 
             return View(usuario);
         }
+
+     public IActionResult TipoDeUsuarios()
+{
+    var viewModel = new UsuarioViewModel
+    {
+        TiposDisponiveis = new List<SelectListItem>
+        {
+            new SelectListItem { Value = UsuarioTipo.ADMIN.ToString(), Text = UsuarioTipo.ADMIN.ToString() },
+            new SelectListItem { Value = UsuarioTipo.PADRAO.ToString(), Text = UsuarioTipo.PADRAO.ToString() }
+        }
+    };
+
+    return View(viewModel);
+}
+
+public IActionResult RegistrarUsuarios()
+{   
+    List<UsuarioTipo> tipos = Enum.GetValues(typeof(UsuarioTipo)).Cast<UsuarioTipo>().ToList();
+    
+    List<SelectListItem> tiposSelectList = tipos
+        .Select(t => new SelectListItem { Value = t.ToString(), Text = t.ToString() })
+        .ToList();
+
+    UsuarioViewModel viewModel = new UsuarioViewModel
+    {
+        TiposDisponiveis = tiposSelectList
+    };
+
+    return View(viewModel);
+}
 
         public IActionResult Criar()
         {
@@ -132,16 +164,12 @@ public IActionResult Logout()
 {
     return View();
 }
-
         [HttpPost]
-[ValidateAntiForgeryToken]
-public IActionResult LogoutConfirmed()
-{
-    if (User.Identity.IsAuthenticated)
+    [ValidateAntiForgeryToken]
+    public IActionResult LogoutConfirmed()
     {
         HttpContext.SignOutAsync();
-    }
-    return RedirectToAction("Index", "Home");
+        return RedirectToAction("Index", "Home");
     }
   }
 }
