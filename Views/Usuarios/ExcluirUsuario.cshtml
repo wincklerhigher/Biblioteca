@@ -1,0 +1,16 @@
+@model Biblioteca.Models.UsuarioViewModel
+
+<h1>Excluir Usuário</h1>
+
+<p>Você tem certeza que deseja excluir o usuário abaixo?</p>
+
+<p>Nome: @Model.Nome</p>
+<p>Login: @Model.Login</p>
+<p>Tipo: @Model.Tipo</p>
+
+<form method="post">
+    <input type="hidden" asp-for="Id" />
+    <button type="submit">Confirmar Exclusão</button>
+</form>
+
+<a asp-action="Index">Cancelar</a>

@@ -1,0 +1,37 @@
+@model Biblioteca.Models.UsuarioViewModel
+
+<h1>Lista de Usuários</h1>
+
+@if (Model != null && Model.Usuarios != null)
+{
+    <table>
+        <thead>
+            <tr>
+                <th>Nome</th>
+                <th>Login</th>
+                <th>Tipo</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var usuario in Model.Usuarios)
+            {
+                <tr>
+                    <td>@usuario.Nome</td>
+                    <td>@usuario.Login</td>
+                    <td>@(usuario.Tipo == 0 ? "Admin" : "Padrão")</td>
+                    <td>
+                        <a asp-page="./EditarUsuario" asp-route-id="@usuario.Id">Editar</a> |
+                        <a asp-page="./ExcluirUsuario" asp-route-id="@usuario.Id">Excluir</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>Nenhum usuário disponível.</p>
+}
+
+<a asp-page="/Usuarios/CriarUsuario">Criar Novo Usuário</a>

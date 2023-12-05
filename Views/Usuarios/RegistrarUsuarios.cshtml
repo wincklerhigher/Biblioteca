@@ -1,0 +1,21 @@
+@model Biblioteca.Models.UsuarioViewModel
+
+<h1>Registrar Novo Usuário</h1>
+
+<form method="post">
+    <label for="Nome">Nome:</label>
+    <input type="text" asp-for="Nome" required />
+
+    <label for="Login">Login:</label>
+    <input type="text" asp-for="Login" required />
+
+    <label for="Senha">Senha:</label>
+    <input type="password" asp-for="Senha" required />
+
+    <label for="ConfirmarSenha">Confirmar Senha:</label>
+    <input type="password" asp-for="ConfirmarSenha" required />
+
+    <button type="submit">Registrar</button>
+</form>
+
+<a asp-action="Index">Cancelar</a>

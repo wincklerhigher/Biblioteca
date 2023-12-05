@@ -1,0 +1,23 @@
+@model Biblioteca.Models.UsuarioViewModel
+
+<h1>Editar Usuário</h1>
+
+<form method="post">
+    <input type="hidden" asp-for="Id" />
+    
+    <label for="Nome">Nome:</label>
+    <input type="text" asp-for="Nome" required />
+
+    <label for="Login">Login:</label>
+    <input type="text" asp-for="Login" required />
+
+    <label for="Tipo">Tipo:</label>
+    <select asp-for="Tipo">
+        <option value="0">Admin</option>
+        <option value="1">Padrão</option>
+    </select>
+
+    <button type="submit">Salvar</button>
+</form>
+
+<a asp-action="Index">Cancelar</a>

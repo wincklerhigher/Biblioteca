@@ -1,7 +1,9 @@
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using System.Security.Cryptography;
 using System.Text;
+using System;
+using Microsoft.Extensions.Configuration;
+using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 
 namespace Biblioteca.Models
 {
@@ -12,20 +14,24 @@ namespace Biblioteca.Models
         public DbSet<Usuario> Usuarios { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {            
+            string connectionString = "Server=localhost;Database=Biblioteca;User=root;Password=;";
+
+            optionsBuilder.UseMySql(connectionString, new MySqlServerVersion(new Version(8, 0, 23)));
+        }
+
+        public BibliotecaContext(DbContextOptions<BibliotecaContext> options) : base(options)
         {
-            optionsBuilder.UseMySql("Server=localhost;Database=Biblioteca;Uid=root;");
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Usuario>()
-                .Property(u => u.PasswordHash)
+                .Property(u => u.Senha)
                 .IsRequired();
 
-            // Adicione mais configurações de modelo conforme necessário
-
             base.OnModelCreating(modelBuilder);
-        }
+        }        
 
         // Método para criar um hash MD5 da senha do usuário
         private string CriarHashMD5(string input)
@@ -47,7 +53,6 @@ namespace Biblioteca.Models
 
         public void SeedData()
         {
- 
         }
     }
 }

@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Biblioteca.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Biblioteca
 {
@@ -23,10 +24,16 @@ namespace Biblioteca
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllersWithViews();
+            services.AddDbContext<BibliotecaContext>(options =>
+            options.UseMySql(Configuration.GetConnectionString("DefaultConnection"),
+            new MySqlServerVersion(new Version(8, 0, 23))));
+
+            services.AddControllersWithViews().AddRazorRuntimeCompilation();
             services.AddDistributedMemoryCache();
             services.AddSession();         
             services.AddScoped<EmprestimoService>();
+            services.AddScoped<UsuarioService>();
+            services.AddScoped<LivroService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -43,6 +50,8 @@ namespace Biblioteca
             app.UseStaticFiles();
 
             app.UseRouting();
+
+            app.UseAuthentication();
 
             app.UseAuthorization();
 

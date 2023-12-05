@@ -8,6 +8,13 @@ namespace Biblioteca.Controllers
 {
     public class LivroController : Controller
     {
+        private readonly LivroService _livroService;
+
+        public LivroController(LivroService livroService)
+        {
+            _livroService = livroService;
+        }
+
         private const int ItensPorPagina = 10;
 
         public IActionResult Cadastro()
@@ -19,15 +26,13 @@ namespace Biblioteca.Controllers
         [HttpPost]
         public IActionResult Cadastro(Livro l)
         {
-            LivroService livroService = new LivroService();
-
             if (l.Id == 0)
             {
-                livroService.Inserir(l);
+                _livroService.Inserir(l);
             }
             else
             {
-                livroService.Atualizar(l);
+                _livroService.Atualizar(l);
             }
 
             return RedirectToAction("Listagem");
@@ -41,9 +46,7 @@ namespace Biblioteca.Controllers
                 new FiltrosLivros { Filtro = filtro, TipoFiltro = tipoFiltro } :
                 null;
 
-            LivroService livroService = new LivroService();
-
-            var livros = livroService.ListarTodos(objFiltro).ToList();
+            var livros = _livroService.ListarTodos(objFiltro).ToList();
             var totalPaginas = (int)Math.Ceiling((double)livros.Count / ItensPorPagina);
 
             page = Math.Max(1, Math.Min(page, totalPaginas));
@@ -60,8 +63,7 @@ namespace Biblioteca.Controllers
         public IActionResult Edicao(int id)
         {
             Autenticacao.CheckLogin(this);
-            LivroService ls = new LivroService();
-            Livro l = ls.ObterPorId(id);
+            Livro l = _livroService.ObterPorId(id);
             return View(l);
         }
     }

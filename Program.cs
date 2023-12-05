@@ -1,7 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
@@ -13,6 +10,12 @@ namespace Biblioteca
     {
         public static void Main(string[] args)
         {
+            string senha = "senha123";
+            string hashSenha = PasswordHasher.HashPassword(senha);
+
+            Console.WriteLine("Senha: " + senha);
+            Console.WriteLine("Hash MD5: " + hashSenha);
+
             CreateHostBuilder(args).Build().Run();
         }
 
