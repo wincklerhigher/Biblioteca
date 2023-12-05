@@ -29,16 +29,21 @@ namespace Biblioteca.Controllers
 }
 
         public IActionResult Detalhes(int id)
-        {
-            var usuario = _usuarioService.ObterUsuarioPorId(id);
+{
+    var usuario = _usuarioService.ObterUsuarioPorId(id);
 
-            if (usuario == null)
-            {
-                return NotFound();
-            }
+    if (usuario == null)
+    {
+        return NotFound();
+    }
 
-            return View(usuario);
-        }
+    var viewModel = new UsuarioViewModel
+    {
+        Usuarios = new List<Usuario> { usuario }
+    };
+
+    return View("Detalhes", viewModel);
+}
 
         [HttpGet]
         public IActionResult TipoDeUsuarios()
@@ -91,10 +96,14 @@ namespace Biblioteca.Controllers
             if (usuario == null)
             {
                 return NotFound();
-            }
+            } 
+            var viewModel = new UsuarioViewModel
+    {
+        Usuarios = new List<Usuario> { usuario }
+    };
 
-            return View(usuario);
-        }
+    return View(viewModel);
+}
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -123,10 +132,14 @@ namespace Biblioteca.Controllers
             if (usuario == null)
             {
                 return NotFound();
-            }
+            } 
+            var viewModel = new UsuarioViewModel
+    {
+        Usuarios = new List<Usuario> { usuario }
+    };
 
-            return View(usuario);
-        }
+    return View(viewModel);
+}
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -144,7 +157,7 @@ namespace Biblioteca.Controllers
 
             return RedirectToAction(nameof(ListaDeUsuarios));
         }
-        
+
         private List<SelectListItem> ObterTiposSelectList()
         {
             var tipos = Enum.GetValues(typeof(UsuarioTipo)).Cast<UsuarioTipo>().Select(t => new SelectListItem { Value = t.ToString(), Text = t.ToString() }).ToList();
