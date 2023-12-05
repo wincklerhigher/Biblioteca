@@ -1,19 +1,18 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
-using Biblioteca.Models;
 
 namespace Biblioteca.Models
 {
     public class UsuarioService
     {
-        private readonly BibliotecaContext _context;
+         private readonly BibliotecaContext _context;
 
         public UsuarioService(BibliotecaContext context)
         {
             _context = context;
         }
-
+        
         public List<Usuario> ObterTodosUsuarios()
         {
             return _context.Usuarios.ToList();
@@ -57,12 +56,19 @@ namespace Biblioteca.Models
             return usuario != null && usuario.Tipo == UsuarioTipo.ADMIN;
         }
 
-        public bool AutenticarUsuario(string login, string senha)
-        {
-            var usuario = _context.Usuarios.FirstOrDefault(u => u.Login == login && u.Senha == senha);
-            return usuario != null;
-        }
-
+     public bool AutenticarUsuario(string login, string senha)
+{
+    var usuario = _context.Usuarios.FirstOrDefault(u => u.Login == login && u.Senha == senha);
+    
+    if (usuario != null)
+    {
+        System.Diagnostics.Trace.WriteLine($"Usuário autenticado: {login}");
+        return true;
+    }
+ 
+        System.Diagnostics.Trace.WriteLine($"Falha na autenticação para o usuário: {login}");
+        return false;
+}
         public void CriarNovoUsuario(UsuarioViewModel usuarioViewModel)
         {   
             Usuario novoUsuario = new Usuario

@@ -1,10 +1,10 @@
 using Biblioteca.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using System;
 using Microsoft.AspNetCore.Authentication;
 using System.Collections.Generic;
 using System.Linq;
+using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Biblioteca.Controllers
@@ -13,24 +13,22 @@ namespace Biblioteca.Controllers
     {
         private readonly BibliotecaContext _context;
         private readonly UsuarioService _usuarioService;
-        private readonly ILogger<UsuariosController> _logger;
 
-        public UsuariosController(BibliotecaContext context, ILogger<UsuariosController> logger)
+        public UsuariosController(BibliotecaContext context)
         {
             _context = context;
             _usuarioService = new UsuarioService(_context);
-            _logger = logger;
         }
 
-        public IActionResult ListaDeUsuarios()
-        {
-            var usuarios = _usuarioService.ObterTodosUsuarios();
-            var viewModel = new UsuarioViewModel
-            {
-                Usuarios = usuarios
-            };
-            return View(viewModel);
-        }
+      public IActionResult ListaDeUsuarios()
+{
+    var usuarios = _usuarioService.ObterTodosUsuarios();
+    var viewModel = new UsuarioViewModel
+    {
+        Usuarios = usuarios
+    };
+    return View("ListaDeUsuarios", viewModel);
+}
 
         public IActionResult Detalhes(int id)
         {
@@ -62,15 +60,10 @@ namespace Biblioteca.Controllers
             {
                 _usuarioService.CriarNovoUsuario(usuario);
 
-                return RedirectToAction("Sucesso", "Usuarios");
+                return RedirectToAction("ListaDeUsuarios");
             }
 
             return View(usuario);
-        }
-
-        public IActionResult Sucesso()
-        {
-            return View();
         }
 
         [HttpPost]
@@ -86,7 +79,7 @@ namespace Biblioteca.Controllers
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError($"Erro ao criar usuário: {ex.Message}");
+                    Debug.WriteLine($"Erro ao criar usuário: {ex.Message}");
                 }
             }
 
@@ -94,71 +87,66 @@ namespace Biblioteca.Controllers
         }
 
         [HttpGet]
-        public IActionResult Editar(int id)
+    public IActionResult EditarUsuario(int id)
+    {
+        var usuario = _usuarioService.ObterUsuarioPorId(id);
+
+        if (usuario == null)
         {
-            var usuario = _usuarioService.ObterUsuarioPorId(id);
-
-            if (usuario == null)
-            {
-                return NotFound();
-            }
-
-            return View(usuario);
+            return NotFound();
         }
+
+        return View(usuario);
+    }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Editar(int id, Usuario usuario)
-        {
-            if (id != usuario.Id)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _usuarioService.AtualizarUsuario(usuario);
-                    return RedirectToAction(nameof(Index));
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError($"Erro ao editar usuário: {ex.Message}");
-                }
-            }
-
-            return View(usuario);
-        }
-
-        public IActionResult Excluir(int id)
-        {
-            var usuario = _usuarioService.ObterUsuarioPorId(id);
-
-            if (usuario == null)
-            {
-                return NotFound();
-            }
-
-            return View(usuario);
-        }
-
-        [HttpPost, ActionName("Excluir")]
-        [ValidateAntiForgeryToken]
-        public IActionResult ConfirmarExclusao(int id)
+    [ValidateAntiForgeryToken]
+    public IActionResult EditarUsuario(Usuario usuario)
+    {
+        if (ModelState.IsValid)
         {
             try
             {
-                _usuarioService.RemoverUsuario(id);
-                return RedirectToAction(nameof(Index));
+                _usuarioService.AtualizarUsuario(usuario);
+                return RedirectToAction(nameof(ListaDeUsuarios));
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Erro ao excluir usuário: {ex.Message}");
+                ModelState.AddModelError("", $"Erro ao editar usuário: {ex.Message}");
             }
-
-            return RedirectToAction(nameof(Index));
         }
+
+        return View(usuario);
+    }
+
+        public IActionResult ExcluirUsuario(int id)
+    {
+        var usuario = _usuarioService.ObterUsuarioPorId(id);
+
+        if (usuario == null)
+        {
+            return NotFound();
+        }
+
+        return View(usuario);
+    }
+
+        [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult ConfirmarExclusao(int id)
+    {
+        try
+        {
+            _usuarioService.RemoverUsuario(id);
+            return RedirectToAction(nameof(ListaDeUsuarios));
+        }
+        catch (Exception ex)
+        {
+            ModelState.AddModelError("", $"Erro ao excluir usuário: {ex.Message}");
+        }
+
+        return RedirectToAction(nameof(ListaDeUsuarios));
+    }
 
         private List<SelectListItem> ObterTiposSelectList()
         {
@@ -173,11 +161,11 @@ namespace Biblioteca.Controllers
         }
 
         [HttpPost]
-[ValidateAntiForgeryToken]
-public IActionResult LogoutConfirmado()
-{
-    HttpContext.SignOutAsync(); 
-    return RedirectToAction("Login", "Home"); 
-}
+        [ValidateAntiForgeryToken]
+        public IActionResult LogoutConfirmado()
+        {
+            HttpContext.SignOutAsync();
+            return RedirectToAction("Login", "Home");
+        }
     }
 }

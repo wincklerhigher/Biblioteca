@@ -25,13 +25,16 @@ namespace Biblioteca.Models
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            modelBuilder.Entity<Usuario>()
-                .Property(u => u.Senha)
-                .IsRequired();
+{
+    modelBuilder.Entity<Usuario>()
+        .Property(u => u.Tipo)
+        .IsRequired()
+        .HasMaxLength(30)
+        .HasColumnName("Tipo")
+        .HasConversion<string>();
 
-            base.OnModelCreating(modelBuilder);
-        }        
+    base.OnModelCreating(modelBuilder);
+}
 
         // Método para criar um hash MD5 da senha do usuário
         private string CriarHashMD5(string input)
