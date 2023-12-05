@@ -1,16 +1,34 @@
 @model Biblioteca.Models.UsuarioViewModel
 
-<h1>Excluir Usuário</h1>
+<h2>Excluir Usuário</h2>
 
-<p>Você tem certeza que deseja excluir o usuário abaixo?</p>
+@if (Model != null && Model.Usuarios != null && Model.Usuarios.Any())
+{
+    var usuario = Model.Usuarios.FirstOrDefault(); // Assuming there's only one user in the list
+    if (usuario != null)
+    {
+        <p>Tem certeza que deseja excluir o usuário abaixo?</p>
 
-<p>Nome: @Model.Nome</p>
-<p>Login: @Model.Login</p>
-<p>Tipo: @Model.Tipo</p>
+        <dl>
+            <dt>Nome:</dt>
+            <dd>@usuario.Nome</dd>
 
-<form method="post">
-    <input type="hidden" asp-for="Id" />
-    <button type="submit">Confirmar Exclusão</button>
-</form>
+            <dt>Login:</dt>
+            <dd>@usuario.Login</dd>
 
-<a asp-action="ListaDeUsuarios">Cancelar</a>
+            <dt>Tipo:</dt>
+            <dd>@(usuario.Tipo == UsuarioTipo.ADMIN ? "Admin" : "Padrão")</dd>
+        </dl>
+
+        using (Html.BeginForm("ConfirmarExclusao", "Usuarios", new { id = usuario.Id }, FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+            <button type="submit">Confirmar Exclusão</button>
+            <a asp-action="ListaDeUsuarios" asp-controller="Usuarios">Cancelar</a>
+        }
+    }
+}
+else
+{
+    <p>Nenhum usuário disponível.</p>
+}
