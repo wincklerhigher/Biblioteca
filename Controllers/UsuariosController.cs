@@ -11,25 +11,26 @@ namespace Biblioteca.Controllers
 {
     public class UsuariosController : Controller
     {
-          private readonly BibliotecaContext _context;
-    private readonly UsuarioService _usuarioService;
-    private readonly ILogger<UsuariosController> _logger;
+        private readonly BibliotecaContext _context;
+        private readonly UsuarioService _usuarioService;
+        private readonly ILogger<UsuariosController> _logger;
 
-    public UsuariosController(BibliotecaContext context, ILogger<UsuariosController> logger)
-    {
-        _context = context;
-        _usuarioService = new UsuarioService(_context);
-        _logger = logger;
-    }
-         public IActionResult ListaDeUsuarios()
-    {
-        var usuarios = _usuarioService.ObterTodosUsuarios();
-        var viewModel = new UsuarioViewModel
+        public UsuariosController(BibliotecaContext context, ILogger<UsuariosController> logger)
         {
-            Usuarios = usuarios
-        };
-        return View(viewModel);
-    }
+            _context = context;
+            _usuarioService = new UsuarioService(_context);
+            _logger = logger;
+        }
+
+        public IActionResult ListaDeUsuarios()
+        {
+            var usuarios = _usuarioService.ObterTodosUsuarios();
+            var viewModel = new UsuarioViewModel
+            {
+                Usuarios = usuarios
+            };
+            return View(viewModel);
+        }
 
         public IActionResult Detalhes(int id)
         {
@@ -43,87 +44,93 @@ namespace Biblioteca.Controllers
             return View(usuario);
         }
 
-     [HttpGet]
-    public IActionResult TipoDeUsuarios()
-    {
-        var viewModel = new UsuarioViewModel
+        [HttpGet]
+        public IActionResult TipoDeUsuarios()
         {
-            TiposDisponiveis = ObterTiposSelectList()
-        };
+            var viewModel = new UsuarioViewModel
+            {
+                TiposDisponiveis = ObterTiposSelectList()
+            };
 
-        return View(viewModel);
-    }
-
-[HttpPost]
-public IActionResult RegistrarUsuarios(UsuarioViewModel usuario)
-{
-    if (ModelState.IsValid)
-    {          
-        _usuarioService.CriarNovoUsuario(usuario);
-        
-        return RedirectToAction("Sucesso");
-    }
-    
-    return View(usuario);
-}
+            return View(viewModel);
+        }
 
         [HttpPost]
-    [ValidateAntiForgeryToken]
-    public IActionResult Criar(Usuario usuario)
-    {
-        if (ModelState.IsValid)
+        public IActionResult RegistrarUsuarios(UsuarioViewModel usuario)
         {
-            try
+            if (ModelState.IsValid)
             {
-                _usuarioService.AdicionarUsuario(usuario);
-                return RedirectToAction(nameof(Index));
+                _usuarioService.CriarNovoUsuario(usuario);
+
+                return RedirectToAction("Sucesso", "Usuarios");
             }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Erro ao criar usuário: {ex.Message}");
-            }
+
+            return View(usuario);
         }
 
-        return View(usuario);
-    }
-
-         [HttpGet]
-    public IActionResult Editar(int id)
-    {
-        var usuario = _usuarioService.ObterUsuarioPorId(id);
-
-        if (usuario == null)
+        public IActionResult Sucesso()
         {
-            return NotFound();
+            return View();
         }
-
-        return View(usuario);
-    }
 
         [HttpPost]
-    [ValidateAntiForgeryToken]
-    public IActionResult Editar(int id, Usuario usuario)
-    {
-        if (id != usuario.Id)
+        [ValidateAntiForgeryToken]
+        public IActionResult Criar(Usuario usuario)
         {
-            return NotFound();
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    _usuarioService.AdicionarUsuario(usuario);
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError($"Erro ao criar usuário: {ex.Message}");
+                }
+            }
+
+            return View(usuario);
         }
 
-        if (ModelState.IsValid)
+        [HttpGet]
+        public IActionResult Editar(int id)
         {
-            try
+            var usuario = _usuarioService.ObterUsuarioPorId(id);
+
+            if (usuario == null)
             {
-                _usuarioService.AtualizarUsuario(usuario);
-                return RedirectToAction(nameof(Index));
+                return NotFound();
             }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Erro ao editar usuário: {ex.Message}");
-            }
+
+            return View(usuario);
         }
 
-        return View(usuario);
-    }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Editar(int id, Usuario usuario)
+        {
+            if (id != usuario.Id)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    _usuarioService.AtualizarUsuario(usuario);
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError($"Erro ao editar usuário: {ex.Message}");
+                }
+            }
+
+            return View(usuario);
+        }
+
         public IActionResult Excluir(int id)
         {
             var usuario = _usuarioService.ObterUsuarioPorId(id);
@@ -147,28 +154,30 @@ public IActionResult RegistrarUsuarios(UsuarioViewModel usuario)
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Erro ao excluir usuário: {ex.Message}");                
+                _logger.LogError($"Erro ao excluir usuário: {ex.Message}");
             }
 
             return RedirectToAction(nameof(Index));
         }
-     private List<SelectListItem> ObterTiposSelectList()
-    {
-        var tipos = Enum.GetValues(typeof(UsuarioTipo)).Cast<UsuarioTipo>().Select(t => new SelectListItem { Value = t.ToString(), Text = t.ToString() }).ToList();
-        return tipos;
-    }
+
+        private List<SelectListItem> ObterTiposSelectList()
+        {
+            var tipos = Enum.GetValues(typeof(UsuarioTipo)).Cast<UsuarioTipo>().Select(t => new SelectListItem { Value = t.ToString(), Text = t.ToString() }).ToList();
+            return tipos;
+        }
 
         [HttpGet]
-public IActionResult Logout()
-{
-    return View();
-}
+        public IActionResult Logout()
+        {
+            return View();
+        }
+
         [HttpPost]
-    [ValidateAntiForgeryToken]
-    public IActionResult LogoutConfirmed()
-    {
-        HttpContext.SignOutAsync();
-        return RedirectToAction("Index", "Home");
+        [ValidateAntiForgeryToken]
+        public IActionResult LogoutConfirmed()
+        {
+            HttpContext.SignOutAsync();
+            return RedirectToAction("Index", "Home");
+        }
     }
-  }
 }

@@ -52,29 +52,29 @@ namespace Biblioteca.Models
         }
 
         public bool IsUsuarioAdmin(string login)
-{
-    var usuario = ObterUsuarioPorLogin(login);
-    return usuario != null && usuario.Tipo == UsuarioTipo.ADMIN;
-}
+        {
+            var usuario = ObterUsuarioPorLogin(login);
+            return usuario != null && usuario.Tipo == UsuarioTipo.ADMIN;
+        }
 
         public bool AutenticarUsuario(string login, string senha)
         {
             var usuario = _context.Usuarios.FirstOrDefault(u => u.Login == login && u.Senha == senha);
             return usuario != null;
         }
+
         public void CriarNovoUsuario(UsuarioViewModel usuarioViewModel)
-{   
+        {   
+            Usuario novoUsuario = new Usuario
+            {
+                Nome = usuarioViewModel.Nome,
+                Login = usuarioViewModel.Login,
+                Senha = usuarioViewModel.Senha,
+                Tipo = usuarioViewModel.Tipo
+            };
 
-    Usuario novoUsuario = new Usuario
-    {
-        Nome = usuarioViewModel.Nome,
-        Login = usuarioViewModel.Login,
-        Senha = usuarioViewModel.Senha,
-        Tipo = usuarioViewModel.Tipo
-    };
-
-    _context.Usuarios.Add(novoUsuario);
-    _context.SaveChanges();
-}
+            _context.Usuarios.Add(novoUsuario);
+            _context.SaveChanges();
+        }
     }
 }

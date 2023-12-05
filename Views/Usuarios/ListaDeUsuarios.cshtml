@@ -2,7 +2,7 @@
 
 <h1>Lista de Usuários</h1>
 
-@if (Model != null && Model.Usuarios != null)
+@if (Model != null && Model.Usuarios != null && Model.Usuarios.Any())
 {
     <table>
         <thead>
@@ -19,10 +19,10 @@
                 <tr>
                     <td>@usuario.Nome</td>
                     <td>@usuario.Login</td>
-                    <td>@(usuario.Tipo == 0 ? "Admin" : "Padrão")</td>
+                    <td>@(usuario.Tipo == UsuarioTipo.ADMIN ? "Admin" : "Padrão")</td>
                     <td>
-                        <a asp-page="./EditarUsuario" asp-route-id="@usuario.Id">Editar</a> |
-                        <a asp-page="./ExcluirUsuario" asp-route-id="@usuario.Id">Excluir</a>
+                        <a href="@Url.Action("Editar", "Usuarios", new { id = usuario.Id })">Editar</a> |
+                        <a href="@Url.Action("Excluir", "Usuarios", new { id = usuario.Id })">Excluir</a>
                     </td>
                 </tr>
             }
@@ -34,4 +34,8 @@ else
     <p>Nenhum usuário disponível.</p>
 }
 
-<a asp-page="/Usuarios/RegistrarUsuarios">Criar Novo Usuário</a>
+@using (Html.BeginForm("RegistrarUsuarios", "Usuarios", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+    <button type="submit">Criar Novo Usuário</button>
+}

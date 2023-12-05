@@ -2,7 +2,7 @@
 
 <h1>Registrar Novo Usuário</h1>
 
-<form method="post">
+<form asp-action="RegistrarUsuarios" method="post">
     <label for="Nome">Nome:</label>
     <input type="text" asp-for="Nome" required />
 
@@ -15,9 +15,9 @@
     <label for="ConfirmarSenha">Confirmar Senha:</label>
     <input type="password" asp-for="ConfirmarSenha" required />
 
-    <label for="Tipo">Tipo:</label>
-    <select asp-for="Tipo" asp-items="Model.TiposDisponiveis">
-        <option value="">Selecione o tipo</option>
+    <select asp-for="Tipo">
+        <option value="@UsuarioTipo.ADMIN">Administrador</option>
+        <option value="@UsuarioTipo.PADRAO">Padrão</option>
     </select>
 
     <button type="submit">Registrar</button>
