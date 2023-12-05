@@ -16,9 +16,10 @@ namespace Biblioteca.Models
 
         public string Estado { get; set; }
         
-        public string ObterClasseDestaque()
-    {
-        return Estado == "Atrasado" && DataDevolucao < DateTime.Today ? "destaque-atrasado" : "";
-    }
+     public string ObterClasseDestaque()
+{
+    string classeDestaque = Estado == "Atrasado" && DataDevolucao < DateTime.Today ? "bg-danger text-white" : "";
+    return $"muted {classeDestaque}";
+}
   }
 }

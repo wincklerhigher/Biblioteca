@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using Biblioteca.Models;
 
 namespace Biblioteca.Models
 {
@@ -30,11 +31,37 @@ namespace Biblioteca.Models
                 bc.SaveChanges();
             }
         }
-     public List<Emprestimo> ListarTodosComDestaque(FiltrosEmprestimos filtro)
+ public List<Emprestimo> ListarTodosComDestaque(FiltrosEmprestimos filtro)
 {
     using (BibliotecaContext bc = new BibliotecaContext())
     {
-        var emprestimos = bc.Emprestimos.Include(e => e.Livro).ToList();
+        IQueryable<Emprestimo> query = bc.Emprestimos.Include(e => e.Livro);
+
+        if (filtro != null)
+        {            
+            switch (filtro.TipoFiltro)
+            {
+                case "Usuario":
+                    query = query.Where(e => e.NomeUsuario.Contains(filtro.Filtro));
+                    break;
+
+                case "Livro":
+                    if (!string.IsNullOrEmpty(filtro.Filtro))
+                    {
+                        int livroId;
+                        if (int.TryParse(filtro.Filtro, out livroId))
+                        {
+                            query = query.Where(e => e.LivroId == livroId);
+                        }
+                    }
+                    break;              
+
+                default:
+                    break;
+            }
+        }
+
+        var emprestimos = query.ToList();
 
         foreach (var e in emprestimos)
         {
@@ -44,14 +71,13 @@ namespace Biblioteca.Models
         return emprestimos;
     }
 }
-        public Emprestimo ObterPorId(int id)
-        {
-            using(BibliotecaContext bc = new BibliotecaContext())
-            {
-                return bc.Emprestimos.Find(id);
-            }
-        }
-
+public Emprestimo ObterPorId(int id)
+{
+    using(BibliotecaContext bc = new BibliotecaContext())
+    {
+        return bc.Emprestimos.Find(id);
+    }
+}
         public void Apagar(int id)
         {
             using (BibliotecaContext bc = new BibliotecaContext())

@@ -8,6 +8,12 @@ namespace Biblioteca.Controllers
 {
     public class EmprestimoController : Controller
     {
+        private readonly EmprestimoService _emprestimoService;
+
+    public EmprestimoController(EmprestimoService emprestimoService)
+    {
+        _emprestimoService = emprestimoService;
+    }
         public IActionResult Cadastro()
         {
             LivroService livroService = new LivroService();
@@ -47,7 +53,8 @@ public IActionResult ListarEmprestimos()
     var emprestimosComDestaque = emprestimoService.ListarTodosComDestaque(null);
     return View(emprestimosComDestaque);
 }
-        public IActionResult Listagem(int page = 1, string tipoFiltro = "", string filtro = "")
+
+   public IActionResult Listagem(int page = 1, string tipoFiltro = "", string filtro = "")
 {
     FiltrosEmprestimos objFiltro = null;
     if (!string.IsNullOrEmpty(filtro))
@@ -61,23 +68,26 @@ public IActionResult ListarEmprestimos()
     EmprestimoService emprestimoService = new EmprestimoService();
     var emprestimosComDestaque = emprestimoService.ListarTodosComDestaque(objFiltro);
 
-    var emprestimosPaginados = emprestimosComDestaque
+    var emprestimosFiltrados = emprestimosComDestaque
         .OfType<Emprestimo>()
+        .Where(e => e.NomeUsuario != null && e.NomeUsuario.IndexOf(filtro, StringComparison.OrdinalIgnoreCase) != -1 ||
+                    e.Livro != null && e.Livro.Titulo != null && e.Livro.Titulo.IndexOf(filtro, StringComparison.OrdinalIgnoreCase) != -1)
         .Skip((page - 1) * perPage)
         .Take(perPage)
         .ToList();
-
-    var totalPages = (int)Math.Ceiling((double)emprestimosComDestaque.Count / perPage);
+    
+    var totalPages = (int)Math.Ceiling((double)emprestimosFiltrados.Count / perPage);
 
     var viewModel = new CadEmprestimoViewModel
     {
-        Emprestimos = emprestimosPaginados,
+        Emprestimos = emprestimosFiltrados,
         CurrentPage = page,
         TotalPages = totalPages
     };
 
     return View(viewModel);
 }
+
  public IActionResult Edicao(int id)
         {
             LivroService livroService = new LivroService();
@@ -127,4 +137,4 @@ public IActionResult ListarEmprestimos()
         return RedirectToAction("Listagem");
     }
       }
-    }      
+    }     

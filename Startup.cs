@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Biblioteca.Models;
 
 namespace Biblioteca
 {
@@ -24,7 +25,8 @@ namespace Biblioteca
         {
             services.AddControllersWithViews();
             services.AddDistributedMemoryCache();
-            services.AddSession();
+            services.AddSession();         
+            services.AddScoped<EmprestimoService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
