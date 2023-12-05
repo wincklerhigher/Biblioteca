@@ -11,13 +11,11 @@ namespace Biblioteca.Controllers
 {
     public class UsuariosController : Controller
     {
-        private readonly BibliotecaContext _context;
         private readonly UsuarioService _usuarioService;
 
-        public UsuariosController(BibliotecaContext context)
+        public UsuariosController(UsuarioService usuarioService)
         {
-            _context = context;
-            _usuarioService = new UsuarioService(_context);
+            _usuarioService = usuarioService;
         }
 
       public IActionResult ListaDeUsuarios()
@@ -86,68 +84,67 @@ namespace Biblioteca.Controllers
             return View(usuario);
         }
 
-        [HttpGet]
-    public IActionResult EditarUsuario(int id)
-    {
-        var usuario = _usuarioService.ObterUsuarioPorId(id);
-
-        if (usuario == null)
+        public IActionResult Editar(int id)
         {
-            return NotFound();
+            var usuario = _usuarioService.ObterUsuarioPorId(id);
+
+            if (usuario == null)
+            {
+                return NotFound();
+            }
+
+            return View(usuario);
         }
 
-        return View(usuario);
-    }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Editar(Usuario usuario)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    _usuarioService.AtualizarUsuario(usuario);
+                    return RedirectToAction(nameof(ListaDeUsuarios));
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("", $"Erro ao editar usuário: {ex.Message}");
+                }
+            }
+
+            return View(usuario);
+        }
+
+        public IActionResult Excluir(int id)
+        {
+            var usuario = _usuarioService.ObterUsuarioPorId(id);
+
+            if (usuario == null)
+            {
+                return NotFound();
+            }
+
+            return View(usuario);
+        }
 
         [HttpPost]
-    [ValidateAntiForgeryToken]
-    public IActionResult EditarUsuario(Usuario usuario)
-    {
-        if (ModelState.IsValid)
+        [ValidateAntiForgeryToken]
+        public IActionResult ConfirmarExclusao(int id)
         {
             try
             {
-                _usuarioService.AtualizarUsuario(usuario);
+                _usuarioService.RemoverUsuario(id);
                 return RedirectToAction(nameof(ListaDeUsuarios));
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("", $"Erro ao editar usuário: {ex.Message}");
+                ModelState.AddModelError("", $"Erro ao excluir usuário: {ex.Message}");
             }
-        }
 
-        return View(usuario);
-    }
-
-        public IActionResult ExcluirUsuario(int id)
-    {
-        var usuario = _usuarioService.ObterUsuarioPorId(id);
-
-        if (usuario == null)
-        {
-            return NotFound();
-        }
-
-        return View(usuario);
-    }
-
-        [HttpPost]
-    [ValidateAntiForgeryToken]
-    public IActionResult ConfirmarExclusao(int id)
-    {
-        try
-        {
-            _usuarioService.RemoverUsuario(id);
             return RedirectToAction(nameof(ListaDeUsuarios));
         }
-        catch (Exception ex)
-        {
-            ModelState.AddModelError("", $"Erro ao excluir usuário: {ex.Message}");
-        }
-
-        return RedirectToAction(nameof(ListaDeUsuarios));
-    }
-
+        
         private List<SelectListItem> ObterTiposSelectList()
         {
             var tipos = Enum.GetValues(typeof(UsuarioTipo)).Cast<UsuarioTipo>().Select(t => new SelectListItem { Value = t.ToString(), Text = t.ToString() }).ToList();
