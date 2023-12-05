@@ -28,7 +28,7 @@ namespace Biblioteca
             options.UseMySql(Configuration.GetConnectionString("DefaultConnection"),
             new MySqlServerVersion(new Version(8, 0, 23))));
 
-            services.AddControllersWithViews().AddRazorRuntimeCompilation();
+            services.AddControllersWithViews();
             services.AddDistributedMemoryCache();
             services.AddSession();         
             services.AddScoped<EmprestimoService>();

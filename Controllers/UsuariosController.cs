@@ -11,20 +11,25 @@ namespace Biblioteca.Controllers
 {
     public class UsuariosController : Controller
     {
-        private readonly UsuarioService _usuarioService;
-        private readonly ILogger<UsuariosController> _logger;
+          private readonly BibliotecaContext _context;
+    private readonly UsuarioService _usuarioService;
+    private readonly ILogger<UsuariosController> _logger;
 
-        public UsuariosController(UsuarioService usuarioService, ILogger<UsuariosController> logger)
+    public UsuariosController(BibliotecaContext context, ILogger<UsuariosController> logger)
+    {
+        _context = context;
+        _usuarioService = new UsuarioService(_context);
+        _logger = logger;
+    }
+         public IActionResult ListaDeUsuarios()
+    {
+        var usuarios = _usuarioService.ObterTodosUsuarios();
+        var viewModel = new UsuarioViewModel
         {
-            _usuarioService = usuarioService;
-            _logger = logger;
-        }
-        public IActionResult ListaDeUsuarios()
-        {
-            var model = new UsuarioViewModel();
-
-            return View(model);
-        }
+            Usuarios = usuarios
+        };
+        return View(viewModel);
+    }
 
         public IActionResult Detalhes(int id)
         {
@@ -38,98 +43,87 @@ namespace Biblioteca.Controllers
             return View(usuario);
         }
 
-     public IActionResult TipoDeUsuarios()
+     [HttpGet]
+    public IActionResult TipoDeUsuarios()
+    {
+        var viewModel = new UsuarioViewModel
+        {
+            TiposDisponiveis = ObterTiposSelectList()
+        };
+
+        return View(viewModel);
+    }
+
+[HttpPost]
+public IActionResult RegistrarUsuarios(UsuarioViewModel usuario)
 {
-    var viewModel = new UsuarioViewModel
-    {
-        TiposDisponiveis = new List<SelectListItem>
-        {
-            new SelectListItem { Value = UsuarioTipo.ADMIN.ToString(), Text = UsuarioTipo.ADMIN.ToString() },
-            new SelectListItem { Value = UsuarioTipo.PADRAO.ToString(), Text = UsuarioTipo.PADRAO.ToString() }
-        }
-    };
-
-    return View(viewModel);
-}
-
-public IActionResult RegistrarUsuarios()
-{   
-    List<UsuarioTipo> tipos = Enum.GetValues(typeof(UsuarioTipo)).Cast<UsuarioTipo>().ToList();
+    if (ModelState.IsValid)
+    {          
+        _usuarioService.CriarNovoUsuario(usuario);
+        
+        return RedirectToAction("Sucesso");
+    }
     
-    List<SelectListItem> tiposSelectList = tipos
-        .Select(t => new SelectListItem { Value = t.ToString(), Text = t.ToString() })
-        .ToList();
-
-    UsuarioViewModel viewModel = new UsuarioViewModel
-    {
-        TiposDisponiveis = tiposSelectList
-    };
-
-    return View(viewModel);
+    return View(usuario);
 }
 
-        public IActionResult Criar()
+        [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult Criar(Usuario usuario)
+    {
+        if (ModelState.IsValid)
         {
-            return View();
+            try
+            {
+                _usuarioService.AdicionarUsuario(usuario);
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Erro ao criar usuário: {ex.Message}");
+            }
         }
+
+        return View(usuario);
+    }
+
+         [HttpGet]
+    public IActionResult Editar(int id)
+    {
+        var usuario = _usuarioService.ObterUsuarioPorId(id);
+
+        if (usuario == null)
+        {
+            return NotFound();
+        }
+
+        return View(usuario);
+    }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Criar(Usuario usuario)
+    [ValidateAntiForgeryToken]
+    public IActionResult Editar(int id, Usuario usuario)
+    {
+        if (id != usuario.Id)
         {
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _usuarioService.AdicionarUsuario(usuario);
-                    return RedirectToAction(nameof(Index));
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError($"Erro ao criar usuário: {ex.Message}");                    
-                }
-            }
-
-            return View(usuario);
+            return NotFound();
         }
 
-        public IActionResult Editar(int id)
+        if (ModelState.IsValid)
         {
-            var usuario = _usuarioService.ObterUsuarioPorId(id);
-
-            if (usuario == null)
+            try
             {
-                return NotFound();
+                _usuarioService.AtualizarUsuario(usuario);
+                return RedirectToAction(nameof(Index));
             }
-
-            return View(usuario);
+            catch (Exception ex)
+            {
+                _logger.LogError($"Erro ao editar usuário: {ex.Message}");
+            }
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Editar(int id, Usuario usuario)
-        {
-            if (id != usuario.Id)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _usuarioService.AtualizarUsuario(usuario);
-                    return RedirectToAction(nameof(Index));
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError($"Erro ao editar usuário: {ex.Message}");                    
-                }
-            }
-
-            return View(usuario);
-        }
-
+        return View(usuario);
+    }
         public IActionResult Excluir(int id)
         {
             var usuario = _usuarioService.ObterUsuarioPorId(id);
@@ -158,7 +152,12 @@ public IActionResult RegistrarUsuarios()
 
             return RedirectToAction(nameof(Index));
         }
-     
+     private List<SelectListItem> ObterTiposSelectList()
+    {
+        var tipos = Enum.GetValues(typeof(UsuarioTipo)).Cast<UsuarioTipo>().Select(t => new SelectListItem { Value = t.ToString(), Text = t.ToString() }).ToList();
+        return tipos;
+    }
+
         [HttpGet]
 public IActionResult Logout()
 {

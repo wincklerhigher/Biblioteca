@@ -62,5 +62,19 @@ namespace Biblioteca.Models
             var usuario = _context.Usuarios.FirstOrDefault(u => u.Login == login && u.Senha == senha);
             return usuario != null;
         }
+        public void CriarNovoUsuario(UsuarioViewModel usuarioViewModel)
+{   
+
+    Usuario novoUsuario = new Usuario
+    {
+        Nome = usuarioViewModel.Nome,
+        Login = usuarioViewModel.Login,
+        Senha = usuarioViewModel.Senha,
+        Tipo = usuarioViewModel.Tipo
+    };
+
+    _context.Usuarios.Add(novoUsuario);
+    _context.SaveChanges();
+}
     }
 }
