@@ -21,18 +21,15 @@ namespace Biblioteca.Models
         {
             if (Tipo == UsuarioTipo.ADMIN)
             {
-                // Lógica para executar a função do administrador
-                // ...
+                
             }
             else if (Tipo == UsuarioTipo.PADRAO)
             {
-                // Lógica para executar a função do usuário padrão
-                // ...
+                
             }
             else
             {
-                // Lógica para outros tipos de usuário, se necessário
-                // ...
+                
             }
         }
     }
