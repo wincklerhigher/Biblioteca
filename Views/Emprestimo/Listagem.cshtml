@@ -1,7 +1,7 @@
 @model CadEmprestimoViewModel
 
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-
+<link rel="stylesheet" href="~/css/listagem.css" /> 
 
 @{
     ViewData["Title"] = "Listagem de Empréstimos";
@@ -39,25 +39,24 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (var e in Model.Emprestimos)
-                {
-                    <tr class="@((e.Estado == "Atrasado" && e.DataDevolucao < DateTime.Today) ? "bg-danger text-danger" : "")">
-                        <td>@e.Id</td>
-                        <td>@e.NomeUsuario</td>
-                        <td>@e.DataEmprestimo.ToString("dd/MM/yyyy")</td>
-                        <td>@(e.DataDevolucao.HasValue ? e.DataDevolucao.Value.ToString("dd/MM/yyyy") : "")</td>
-                        <td>@(e.Livro != null ? e.Livro.Titulo : "")</td>
-                        <td>@(e.Livro != null ? e.Livro.Autor : "")</td>
-                        <td>
-                            <div>
-                                <a asp-controller="Emprestimo" asp-action="Edicao" asp-route-id="@e.Id" class="btn btn-info btn-sm">Editar</a>
-                            </div>
-                            <div>
-                                <a asp-controller="Emprestimo" asp-action="Apagar" asp-route-id="@e.Id" class="btn btn-danger btn-sm">Apagar</a>
-                            </div>
-                        </td>
-                    </tr>
-                }
+               @foreach (var e in Model.Emprestimos) {
+    <tr class="bg-listagem @(e.Estado == "Atrasado" && e.DataDevolucao < DateTime.Today ? "text-danger" : "")">
+        <td>@e.Id</td>
+        <td>@e.NomeUsuario</td>
+        <td>@e.DataEmprestimo.ToString("dd/MM/yyyy")</td>
+        <td>@(e.DataDevolucao.HasValue ? e.DataDevolucao.Value.ToString("dd/MM/yyyy") : "")</td>
+        <td>@(e.Livro != null ? e.Livro.Titulo : "")</td>
+        <td>@(e.Livro != null ? e.Livro.Autor : "")</td>
+        <td>
+            <div class="btn-acoes">
+                <a asp-controller="Emprestimo" asp-action="Edicao" asp-route-id="@e.Id" class="btn btn-info btn-sm">Editar</a>
+            </div>
+            <div class="btn-acoes">
+                <a asp-controller="Emprestimo" asp-action="Apagar" asp-route-id="@e.Id" class="btn btn-danger btn-sm">Apagar</a>
+            </div>
+        </td>
+    </tr>
+}
             </tbody>
         </table>
 
