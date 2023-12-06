@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
+using System;
 
 namespace Biblioteca.Models
 {
@@ -28,8 +29,13 @@ namespace Biblioteca.Models
         {
             return _context.Usuarios.FirstOrDefault(u => u.Id == id);
         }
-    
 
+        public Usuario ObterUsuarioPorTipo(UsuarioTipo tipo)
+        {
+            return _context.Usuarios.FirstOrDefault(u => u.Tipo == tipo);
+        }
+
+       
         public void AdicionarUsuario(Usuario usuario)
         {
             _context.Usuarios.Add(usuario);
@@ -38,7 +44,7 @@ namespace Biblioteca.Models
 
         public void AtualizarUsuario(Usuario usuario, string userRole)
     {
-        if (userRole != "Admin")
+        if (userRole != "ADMIN")
         {
             throw new AccessDeniedException("Access denied");
         }
@@ -56,12 +62,19 @@ namespace Biblioteca.Models
                 _context.SaveChanges();
             }
         }
+        
+        public bool IsUsuarioAdmin(UsuarioTipo tipo)
+{
+    var usuario = ObterUsuarioPorTipo(tipo);
 
-        public bool IsUsuarioAdmin(string login)
-        {
-            var usuario = ObterUsuarioPorLogin(login);
-            return usuario != null && usuario.Tipo == UsuarioTipo.ADMIN;
-        }
+    // Verificar se o usuário é o usuário padrão ou admin
+    if (usuario != null && (usuario.Tipo == UsuarioTipo.PADRAO || usuario.Tipo == UsuarioTipo.ADMIN))
+    {
+        return true;
+    }
+
+    return false;
+}
 
         public bool AutenticarUsuario(string login, string senha)
         {
@@ -89,6 +102,11 @@ namespace Biblioteca.Models
 
             _context.Usuarios.Add(novoUsuario);
             _context.SaveChanges();
+        }
+
+        internal object ObterUsuarioPorId(string usuarioAtualId)
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -17,7 +17,7 @@
             <dd>@usuario.Login</dd>
 
             <dt>Tipo:</dt>
-            <dd>@(usuario.Tipo == UsuarioTipo.ADMIN ? "Admin" : "Padrão")</dd>
+            <dd>@(usuario.Tipo == UsuarioTipo.ADMIN ? "ADMIN" : "Padrão")</dd>
         </dl>
 
         using (Html.BeginForm("ConfirmarExclusao", "Usuarios", new { id = usuario.Id }, FormMethod.Post))

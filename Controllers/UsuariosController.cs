@@ -27,24 +27,7 @@ namespace Biblioteca.Controllers
         Usuarios = usuarios
     };
     return View("ListaDeUsuarios", viewModel);
-}
-
-        public IActionResult Detalhes(int id)
-{
-    var usuario = _usuarioService.ObterUsuarioPorId(id);
-
-    if (usuario == null)
-    {
-        return NotFound();
-    }
-
-    var viewModel = new UsuarioViewModel
-    {
-        Usuarios = new List<Usuario> { usuario }
-    };
-
-    return View("Detalhes", viewModel);
-}
+}        
 
         [HttpGet]
         public IActionResult TipoDeUsuarios()
@@ -90,15 +73,21 @@ namespace Biblioteca.Controllers
             return View(usuario);
         }
 
-        public IActionResult Editar(int id)
-        {
-            var usuario = _usuarioService.ObterUsuarioPorId(id);
+          public IActionResult AcessoNegado()
+    {
+        return View();
+    }   
 
-            if (usuario == null)
-            {
-                return NotFound();
-            } 
-            var viewModel = new UsuarioViewModel
+        public IActionResult Editar(int id)
+{
+    var usuario = _usuarioService.ObterUsuarioPorId(id);
+
+    if (usuario == null)
+    {
+        return NotFound();
+    }
+
+    var viewModel = new UsuarioViewModel
     {
         Usuarios = new List<Usuario> { usuario }
     };
@@ -106,47 +95,54 @@ namespace Biblioteca.Controllers
     return View(viewModel);
 }
 
-     [HttpPost]
-    [ValidateAntiForgeryToken]
-    public IActionResult Editar(Usuario usuario)
-    {
-        try
-        {
-            string userRole = User.FindFirstValue(ClaimTypes.Role);
-            _usuarioService.AtualizarUsuario(usuario, userRole);
-            return RedirectToAction(nameof(ListaDeUsuarios));
-        }
-        catch (AccessDeniedException)
+[HttpPost]
+[ValidateAntiForgeryToken]
+public IActionResult Editar(UsuarioViewModel usuarioViewModel)
+{
+    try
+    {        
+        var usuarioAtualId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        // Verificar se o usuário atual é um administrador
+        if (!User.IsInRole("ADMIN"))
         {
             return RedirectToAction("AcessoNegado", "Usuarios");
         }
-        catch (Exception ex)
+    
+        var usuario = new Usuario
         {
-            ModelState.AddModelError("", $"Erro ao editar usuário: {ex.Message}");
-        }
+            Id = usuarioViewModel.Id,
+            Nome = usuarioViewModel.Nome,
+            Tipo = usuarioViewModel.Tipo
 
-        return View(usuario);
+        };
+        
+        _usuarioService.AtualizarUsuario(usuario, usuario.Tipo.ToString());
+
+        return RedirectToAction(nameof(ListaDeUsuarios));
+    }
+    catch (Exception ex)
+    {
+        ModelState.AddModelError("", $"Erro ao editar usuário: {ex.Message}");
     }
 
-    public IActionResult AcessoNegado()
-    {
-        return View();
-    }   
-
-       public IActionResult Excluir(int id)
+    return View(usuarioViewModel);
+}
+       
+    public IActionResult Excluir(int id)
 {
-    // Verificar se o usuário atual é um administrador
-    if (!User.IsInRole("Admin"))
-    {
-        return RedirectToAction("AcessoNegado", "Usuarios");
-    }
-
     var usuario = _usuarioService.ObterUsuarioPorId(id);
 
     if (usuario == null)
     {
         return NotFound();
     } 
+
+    // Verificar se o usuário atual é um administrador
+    if (usuario.Tipo != UsuarioTipo.PADRAO)
+    {
+        return RedirectToAction("AcessoNegado", "Usuarios");
+    }
 
     var viewModel = new UsuarioViewModel
     {
@@ -157,27 +153,35 @@ namespace Biblioteca.Controllers
 }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult ConfirmarExclusao(int id)
-        {
-            try
-            {
-                _usuarioService.RemoverUsuario(id);
-                return RedirectToAction(nameof(ListaDeUsuarios));
-            }
-            catch (Exception ex)
-            {
-                ModelState.AddModelError("", $"Erro ao excluir usuário: {ex.Message}");
-            }
+[ValidateAntiForgeryToken]
+public IActionResult ConfirmarExclusao(int id)
+{
+    try
+    {
+        var usuario = _usuarioService.ObterUsuarioPorId(id);
 
-            return RedirectToAction(nameof(ListaDeUsuarios));
+        // Verificar se o usuário é do tipo PADRAO
+        if (usuario.Tipo != UsuarioTipo.PADRAO)
+        {
+            return RedirectToAction("AcessoNegado", "Usuarios");
         }
+
+        _usuarioService.RemoverUsuario(id);
+        return RedirectToAction(nameof(ListaDeUsuarios));
+    }
+    catch (Exception ex)
+    {
+        ModelState.AddModelError("", $"Erro ao excluir usuário: {ex.Message}");
+    }
+
+    return RedirectToAction(nameof(ListaDeUsuarios));
+}
 
         private List<SelectListItem> ObterTiposSelectList()
         {
             var tipos = Enum.GetValues(typeof(UsuarioTipo)).Cast<UsuarioTipo>().Select(t => new SelectListItem { Value = t.ToString(), Text = t.ToString() }).ToList();
             return tipos;
-        }
+        }       
 
         [HttpGet]
         public IActionResult Logout()

@@ -1,7 +1,7 @@
-using System.Collections.Generic;
+using System;
 
 namespace Biblioteca.Models
-{    
+{
     public enum UsuarioTipo
     {
         ADMIN,
@@ -13,24 +13,9 @@ namespace Biblioteca.Models
         public int Id { get; set; }
         public string Nome { get; set; }
         public string Login { get; set; }
-        public string Senha { get; set; }       
+        public string Senha { get; set; }
         public UsuarioTipo Tipo { get; set; }
+        public bool IsAdmin => Tipo == UsuarioTipo.ADMIN;
 
-        // Verificar permissões antes de executar uma função
-        public void ExecutarFuncao(string funcao)
-        {
-            if (Tipo == UsuarioTipo.ADMIN)
-            {
-                
-            }
-            else if (Tipo == UsuarioTipo.PADRAO)
-            {
-                
-            }
-            else
-            {
-                
-            }
-        }
+         }
     }
-}
