@@ -201,8 +201,7 @@ public IActionResult Login(LoginViewModel model)
     {
         var claims = new List<Claim>
         {
-            new Claim(ClaimTypes.Name, model.UserName),
-            
+            new Claim(ClaimTypes.Name, model.UserName)
         };
 
         var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
@@ -210,12 +209,16 @@ public IActionResult Login(LoginViewModel model)
 
         HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
 
+        ViewBag.IsRegistration = false;
+        ViewBag.IsLoggedin = true; 
+
         return RedirectToAction("Index"); 
     }
     
     ModelState.AddModelError(string.Empty, "Credenciais inválidas");
     return View(model);
-}        
+}
+
         [HttpGet]
         public IActionResult Logout()
         {

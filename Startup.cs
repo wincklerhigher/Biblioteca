@@ -33,7 +33,7 @@ namespace Biblioteca
 })
 .AddCookie(options =>
 {
-    options.LoginPath = "/Home/Login"; 
+    options.LoginPath = "/Home/Login";
 });
 
         services.AddDbContext<BibliotecaContext>(options =>

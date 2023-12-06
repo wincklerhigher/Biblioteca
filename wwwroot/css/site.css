@@ -74,8 +74,3 @@ body {
 .text-danger {
   color: red !important;
 }
-
-/* site.css ou no próprio arquivo HTML */
-.navbar-hidden {
-  display: none !important;
-}
