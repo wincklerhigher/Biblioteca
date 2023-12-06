@@ -107,8 +107,8 @@ public IActionResult Editar(UsuarioViewModel usuarioViewModel)
     {        
         var usuarioAtualId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-        // Verificar se o usuário atual é um administrador
-        if (!User.IsInRole("ADMIN"))
+        // Verificar se o usuário é do tipo PADRAO, pois só user PADRAO pode ser deletado
+        if (usuarioViewModel.Tipo != UsuarioTipo.ADMIN)
         {
             return RedirectToAction("AcessoNegado", "Usuarios");
         }
@@ -117,6 +117,8 @@ public IActionResult Editar(UsuarioViewModel usuarioViewModel)
         {
             Id = usuarioViewModel.Id,
             Nome = usuarioViewModel.Nome,
+            Login = usuarioViewModel.Login,
+            Senha = usuarioViewModel.Senha,
             Tipo = usuarioViewModel.Tipo
 
         };
