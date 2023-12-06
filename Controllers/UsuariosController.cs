@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Security.Claims;
 
 namespace Biblioteca.Controllers
 {
@@ -105,35 +106,49 @@ namespace Biblioteca.Controllers
     return View(viewModel);
 }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Editar(Usuario usuario)
+     [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult Editar(Usuario usuario)
+    {
+        try
         {
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _usuarioService.AtualizarUsuario(usuario);
-                    return RedirectToAction(nameof(ListaDeUsuarios));
-                }
-                catch (Exception ex)
-                {
-                    ModelState.AddModelError("", $"Erro ao editar usuário: {ex.Message}");
-                }
-            }
-
-            return View(usuario);
+            string userRole = User.FindFirstValue(ClaimTypes.Role);
+            _usuarioService.AtualizarUsuario(usuario, userRole);
+            return RedirectToAction(nameof(ListaDeUsuarios));
+        }
+        catch (AccessDeniedException)
+        {
+            return RedirectToAction("AcessoNegado", "Usuarios");
+        }
+        catch (Exception ex)
+        {
+            ModelState.AddModelError("", $"Erro ao editar usuário: {ex.Message}");
         }
 
-        public IActionResult Excluir(int id)
-        {
-            var usuario = _usuarioService.ObterUsuarioPorId(id);
+        return View(usuario);
+    }
 
-            if (usuario == null)
-            {
-                return NotFound();
-            } 
-            var viewModel = new UsuarioViewModel
+    public IActionResult AcessoNegado()
+    {
+        return View();
+    }   
+
+       public IActionResult Excluir(int id)
+{
+    // Verificar se o usuário atual é um administrador
+    if (!User.IsInRole("Admin"))
+    {
+        return RedirectToAction("AcessoNegado", "Usuarios");
+    }
+
+    var usuario = _usuarioService.ObterUsuarioPorId(id);
+
+    if (usuario == null)
+    {
+        return NotFound();
+    } 
+
+    var viewModel = new UsuarioViewModel
     {
         Usuarios = new List<Usuario> { usuario }
     };

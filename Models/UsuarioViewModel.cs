@@ -22,6 +22,7 @@ namespace Biblioteca.Models
         public string ConfirmarSenha { get; set; }
 
         [Required(ErrorMessage = "O campo Tipo é obrigatório.")]
+        [Display(Name = "Tipo")]
         public UsuarioTipo Tipo { get; set; }
         
         public List<SelectListItem> TiposDisponiveis { get; set; }

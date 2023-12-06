@@ -1,12 +1,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Biblioteca.Models
 {
     public class UsuarioService
     {
-         private readonly BibliotecaContext _context;
+        private readonly BibliotecaContext _context;
 
         public UsuarioService(BibliotecaContext context)
         {
@@ -27,6 +28,7 @@ namespace Biblioteca.Models
         {
             return _context.Usuarios.FirstOrDefault(u => u.Id == id);
         }
+    
 
         public void AdicionarUsuario(Usuario usuario)
         {
@@ -34,12 +36,17 @@ namespace Biblioteca.Models
             _context.SaveChanges();
         }
 
-        public void AtualizarUsuario(Usuario usuario)
+        public void AtualizarUsuario(Usuario usuario, string userRole)
+    {
+        if (userRole != "Admin")
         {
-            _context.Entry(usuario).State = EntityState.Modified;
-            _context.SaveChanges();
+            throw new AccessDeniedException("Access denied");
         }
 
+        _context.Entry(usuario).State = EntityState.Modified;
+        _context.SaveChanges();
+    }
+    
         public void RemoverUsuario(int usuarioId)
         {
             var usuario = _context.Usuarios.Find(usuarioId);
@@ -56,19 +63,20 @@ namespace Biblioteca.Models
             return usuario != null && usuario.Tipo == UsuarioTipo.ADMIN;
         }
 
-     public bool AutenticarUsuario(string login, string senha)
-{
-    var usuario = _context.Usuarios.FirstOrDefault(u => u.Login == login && u.Senha == senha);
-    
-    if (usuario != null)
-    {
-        System.Diagnostics.Trace.WriteLine($"Usuário autenticado: {login}");
-        return true;
-    }
- 
-        System.Diagnostics.Trace.WriteLine($"Falha na autenticação para o usuário: {login}");
-        return false;
-}
+        public bool AutenticarUsuario(string login, string senha)
+        {
+            var usuario = _context.Usuarios.FirstOrDefault(u => u.Login == login && u.Senha == senha);
+            
+            if (usuario != null)
+            {
+                System.Diagnostics.Trace.WriteLine($"Usuário autenticado: {login}");
+                return true;
+            }
+        
+            System.Diagnostics.Trace.WriteLine($"Falha na autenticação de usuário: {login}");
+            return false;
+        }
+
         public void CriarNovoUsuario(UsuarioViewModel usuarioViewModel)
         {   
             Usuario novoUsuario = new Usuario
