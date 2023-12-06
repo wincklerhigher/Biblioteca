@@ -2,7 +2,7 @@ using System;
 using Biblioteca.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
-using System.Collections.Generic;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Biblioteca.Controllers
 {
@@ -16,9 +16,10 @@ namespace Biblioteca.Controllers
             _emprestimoService = emprestimoService;
             _livroService = livroService;
         }
-
+        
         public IActionResult Cadastro()
         {
+            Autenticacao.CheckLogin(this);
             CadEmprestimoViewModel cadModel = new CadEmprestimoViewModel();
             cadModel.Livros = _livroService.ListarTodos();
 
@@ -51,9 +52,12 @@ namespace Biblioteca.Controllers
             var emprestimosComDestaque = _emprestimoService.ListarTodosComDestaque(null);
             return View(emprestimosComDestaque);
         }
-
+        
         public IActionResult Listagem(int page = 1, string tipoFiltro = "", string filtro = "")
         {
+
+            Autenticacao.CheckLogin(this);
+            
             FiltrosEmprestimos objFiltro = !string.IsNullOrEmpty(filtro) ?
                 new FiltrosEmprestimos { Filtro = filtro, TipoFiltro = tipoFiltro } :
                 null;

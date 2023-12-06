@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Threading.Tasks;
 
-namespace SuaAplicacao.Pages.Usuarios
+namespace Biblioteca.Models
 {
     public class LogoutModel : PageModel
     {

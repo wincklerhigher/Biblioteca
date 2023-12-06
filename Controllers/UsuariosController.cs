@@ -7,29 +7,33 @@ using System.Linq;
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace Biblioteca.Controllers
-{
+{        
     public class UsuariosController : Controller
-    {
+    {        
         private readonly UsuarioService _usuarioService;
 
         public UsuariosController(UsuarioService usuarioService)
         {
             _usuarioService = usuarioService;
         }
+      
+        public IActionResult ListaDeUsuarios()
+    {
+    Autenticacao.CheckLogin(this);
 
-      public IActionResult ListaDeUsuarios()
-{
     var usuarios = _usuarioService.ObterTodosUsuarios();
     var viewModel = new UsuarioViewModel
     {
         Usuarios = usuarios
     };
     return View("ListaDeUsuarios", viewModel);
-}        
+    }        
 
-        [HttpGet]
+        [HttpGet]        
         public IActionResult TipoDeUsuarios()
         {
             var viewModel = new UsuarioViewModel
@@ -54,7 +58,7 @@ namespace Biblioteca.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
+        [ValidateAntiForgeryToken]        
         public IActionResult Criar(Usuario usuario)
         {
             if (ModelState.IsValid)
@@ -181,20 +185,52 @@ public IActionResult ConfirmarExclusao(int id)
         {
             var tipos = Enum.GetValues(typeof(UsuarioTipo)).Cast<UsuarioTipo>().Select(t => new SelectListItem { Value = t.ToString(), Text = t.ToString() }).ToList();
             return tipos;
-        }       
+        }            
 
+        public IActionResult Login(string returnUrl = "/")
+{
+           return View();
+}
+
+[HttpPost]
+[ValidateAntiForgeryToken]
+public IActionResult Login(LoginViewModel model)
+{    
+    var autenticacaoValida = new AutenticacaoValida(); 
+    if (autenticacaoValida.VerificarCredenciais(model)) 
+    {
+        var claims = new List<Claim>
+        {
+            new Claim(ClaimTypes.Name, model.UserName),
+            
+        };
+
+        var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+        var principal = new ClaimsPrincipal(identity);
+
+        HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
+
+        return RedirectToAction("Index"); 
+    }
+    
+    ModelState.AddModelError(string.Empty, "Credenciais inválidas");
+    return View(model);
+}        
         [HttpGet]
         public IActionResult Logout()
         {
+            Autenticacao.CheckLogin(this);
+            HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return View();
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult LogoutConfirmado()
-        {
-            HttpContext.SignOutAsync();
-            return RedirectToAction("Login", "Home");
-        }
+     [HttpPost]
+[ValidateAntiForgeryToken]
+public IActionResult LogoutConfirmado() 
+{       
+    Response.Cookies.Delete("oidc");
+
+    return RedirectToAction("Login", "Home");
+}
     }
 }
