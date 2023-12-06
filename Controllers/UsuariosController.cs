@@ -137,8 +137,8 @@ public IActionResult Editar(UsuarioViewModel usuarioViewModel)
     {
         return NotFound();
     } 
-
-    // Verificar se o usuário atual é um administrador
+    
+    // Verificar se o usuário é do tipo PADRAO, pois só user PADRAO pode ser deletado
     if (usuario.Tipo != UsuarioTipo.PADRAO)
     {
         return RedirectToAction("AcessoNegado", "Usuarios");
@@ -160,7 +160,7 @@ public IActionResult ConfirmarExclusao(int id)
     {
         var usuario = _usuarioService.ObterUsuarioPorId(id);
 
-        // Verificar se o usuário é do tipo PADRAO
+        // Verificar se o usuário é do tipo PADRAO, pois só user PADRAO pode ser deletado
         if (usuario.Tipo != UsuarioTipo.PADRAO)
         {
             return RedirectToAction("AcessoNegado", "Usuarios");
