@@ -19,13 +19,13 @@
 
         <dt class="col-sm-2">Data Devolução</dt>
         <dd class="col-sm-10">
-            @(Model.DataDevolucao.HasValue ? Model.DataDevolucao.Value.ToString("dd/MM/yyyy") : "")
+            @(Model.DataDevolucao != null ? Model.DataDevolucao.Value.ToString("dd/MM/yyyy") : "")
         </dd>
 
         <dt class="col-sm-2">Livro</dt>
         <dd class="col-sm-10">@Model.Livro?.Titulo</dd>
         
-        <dt class="col-sm-2">Autor</dt>
+        <dt class="col-sm-2">Autor</dt> 
         <dd class="col-sm-10">@Model.Livro?.Autor</dd>
     </dl>
 

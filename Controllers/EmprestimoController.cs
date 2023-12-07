@@ -54,36 +54,35 @@ namespace Biblioteca.Controllers
         }
         
         public IActionResult Listagem(int page = 1, string tipoFiltro = "", string filtro = "")
-        {
+{
+    Autenticacao.CheckLogin(this);
 
-            Autenticacao.CheckLogin(this);
-            
-            FiltrosEmprestimos objFiltro = !string.IsNullOrEmpty(filtro) ?
-                new FiltrosEmprestimos { Filtro = filtro, TipoFiltro = tipoFiltro } :
-                null;
+    FiltrosEmprestimos objFiltro = !string.IsNullOrEmpty(filtro) ?
+        new FiltrosEmprestimos { Filtro = filtro, TipoFiltro = tipoFiltro } :
+        null;
 
-            const int perPage = 10;
-            var emprestimosComDestaque = _emprestimoService.ListarTodosComDestaque(objFiltro);
+    const int perPage = 10;
+    var emprestimosComDestaque = _emprestimoService.ListarTodosComDestaque(objFiltro);
 
-            var emprestimosFiltrados = emprestimosComDestaque
-                .OfType<Emprestimo>()
-                .Where(e => e.NomeUsuario != null && e.NomeUsuario.IndexOf(filtro, StringComparison.OrdinalIgnoreCase) != -1 ||
-                            e.Livro != null && e.Livro.Titulo != null && e.Livro.Titulo.IndexOf(filtro, StringComparison.OrdinalIgnoreCase) != -1)
-                .Skip((page - 1) * perPage)
-                .Take(perPage)
-                .ToList();
+    var emprestimosFiltrados = emprestimosComDestaque
+        .OfType<Emprestimo>()
+        .Where(e => e.NomeUsuario != null && e.NomeUsuario.IndexOf(filtro, StringComparison.OrdinalIgnoreCase) != -1 ||
+                    e.Livro != null && e.Livro.Titulo != null && e.Livro.Titulo.IndexOf(filtro, StringComparison.OrdinalIgnoreCase) != -1)
+        .Skip((page - 1) * perPage)
+        .Take(perPage)
+        .ToList();
 
-            var totalPages = (int)Math.Ceiling((double)emprestimosFiltrados.Count / perPage);
+    var totalPages = (int)Math.Ceiling((double)emprestimosComDestaque.Count / perPage);
 
-            var viewModel = new CadEmprestimoViewModel
-            {
-                Emprestimos = emprestimosFiltrados,
-                CurrentPage = page,
-                TotalPages = totalPages
-            };
+    var viewModel = new CadEmprestimoViewModel
+    {
+        Emprestimos = emprestimosFiltrados,
+        CurrentPage = page,
+        TotalPages = totalPages 
+    };
 
-            return View(viewModel);
-        }
+    return View(viewModel);
+}
 
         public IActionResult Edicao(int id)
         {
