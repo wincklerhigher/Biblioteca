@@ -82,18 +82,27 @@ namespace Biblioteca.Controllers
         return View();
     }   
 
-        public IActionResult Editar(int id)
+   public IActionResult Editar(int id)
 {
     var usuario = _usuarioService.ObterUsuarioPorId(id);
 
-    if (usuario == null)
-    {
-        return NotFound();
-    }
+    var tiposDisponiveis = Enum.GetValues(typeof(UsuarioTipo))
+        .Cast<UsuarioTipo>()
+        .Select(t => new SelectListItem { Value = t.ToString(), Text = t.ToString() })
+        .ToList();
 
     var viewModel = new UsuarioViewModel
     {
-        Usuarios = new List<Usuario> { usuario }
+        Id = usuario.Id,
+        Nome = usuario.Nome,
+        Login = usuario.Login,
+        Senha = usuario.Senha,
+        Tipo = usuario.Tipo,
+        TiposDisponiveis = tiposDisponiveis,
+        UsuarioAtual = new UsuarioViewModel.UsuarioEditViewModel
+        {
+            Id = usuario.Id
+        }
     };
 
     return View(viewModel);
@@ -105,14 +114,13 @@ public IActionResult Editar(UsuarioViewModel usuarioViewModel)
 {
     try
     {        
-        var usuarioAtualId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var tiposDisponiveis = Enum.GetValues(typeof(UsuarioTipo))
+            .Cast<UsuarioTipo>()
+            .Select(t => new SelectListItem { Value = t.ToString(), Text = t.ToString() })
+            .ToList();
 
-        // Verificar se o usuário é do tipo PADRAO, pois só user PADRAO pode ser deletado
-        if (usuarioViewModel.Tipo != UsuarioTipo.ADMIN)
-        {
-            return RedirectToAction("AcessoNegado", "Usuarios");
-        }
-    
+        usuarioViewModel.TiposDisponiveis = tiposDisponiveis;  // Ensure TiposDisponiveis is set
+
         var usuario = new Usuario
         {
             Id = usuarioViewModel.Id,
@@ -120,9 +128,8 @@ public IActionResult Editar(UsuarioViewModel usuarioViewModel)
             Login = usuarioViewModel.Login,
             Senha = usuarioViewModel.Senha,
             Tipo = usuarioViewModel.Tipo
-
         };
-        
+
         _usuarioService.AtualizarUsuario(usuario, usuario.Tipo.ToString());
 
         return RedirectToAction(nameof(ListaDeUsuarios));
@@ -143,8 +150,7 @@ public IActionResult Editar(UsuarioViewModel usuarioViewModel)
     {
         return NotFound();
     } 
-    
-    // Verificar se o usuário é do tipo PADRAO, pois só user PADRAO pode ser deletado
+        
     if (usuario.Tipo != UsuarioTipo.PADRAO)
     {
         return RedirectToAction("AcessoNegado", "Usuarios");
@@ -165,8 +171,7 @@ public IActionResult ConfirmarExclusao(int id)
     try
     {
         var usuario = _usuarioService.ObterUsuarioPorId(id);
-
-        // Verificar se o usuário é do tipo PADRAO, pois só user PADRAO pode ser deletado
+        
         if (usuario.Tipo != UsuarioTipo.PADRAO)
         {
             return RedirectToAction("AcessoNegado", "Usuarios");

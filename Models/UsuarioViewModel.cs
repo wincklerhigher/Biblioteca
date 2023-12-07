@@ -17,7 +17,6 @@ namespace Biblioteca.Models
         [Required(ErrorMessage = "O campo Senha é obrigatório.")]
         public string Senha { get; set; }
 
-        [Required(ErrorMessage = "O campo Confirmar Senha é obrigatório.")]
         [Compare("Senha", ErrorMessage = "As senhas não coincidem.")]
         public string ConfirmarSenha { get; set; }
 
@@ -28,6 +27,12 @@ namespace Biblioteca.Models
         public List<SelectListItem> TiposDisponiveis { get; set; }
 
         public List<Usuario> Usuarios { get; set; }
-        public Usuario UsuarioAtual { get; set; }
+ 
+        public UsuarioEditViewModel UsuarioAtual { get; set; }
+
+        public class UsuarioEditViewModel
+        {
+            public int Id { get; set; } 
+        }
     }
 }

@@ -14,11 +14,11 @@
     <label for="Senha">Senha:</label>
     <input type="password" asp-for="Senha" required />
 
-    <label for="Tipo">Tipo:</label>
-    <select asp-for="Tipo">
-        <option value="0">Admin</option>
-        <option value="1">Padrão</option>
-    </select>
+    <div class="form-group">
+    <label asp-for="Tipo" class="control-label"></label>
+    @Html.DropDownListFor(model => model.Tipo, Model.TiposDisponiveis, "Selecione...", new { @class = "form-control" })
+    <span asp-validation-for="Tipo" class="text-danger"></span>
+    </div>
 
     <button type="submit">Salvar</button>
 </form>

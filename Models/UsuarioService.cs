@@ -43,16 +43,18 @@ namespace Biblioteca.Models
         }
 
         public void AtualizarUsuario(Usuario usuario, string userRole)
+{
+    
+    if (userRole == "ADMIN" || userRole == "PADRAO")
     {
-        if (userRole != "ADMIN")
-        {
-            throw new AccessDeniedException("Access denied");
-        }
-
         _context.Entry(usuario).State = EntityState.Modified;
         _context.SaveChanges();
     }
-    
+    else
+    {
+        throw new AccessDeniedException("Access denied");
+    }
+}    
         public void RemoverUsuario(int usuarioId)
         {
             var usuario = _context.Usuarios.Find(usuarioId);

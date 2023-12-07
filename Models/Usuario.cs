@@ -15,7 +15,6 @@ namespace Biblioteca.Models
         public string Login { get; set; }
         public string Senha { get; set; }
         public UsuarioTipo Tipo { get; set; }
-        public bool IsAdmin => Tipo == UsuarioTipo.ADMIN;
-
+        
          }
     }
