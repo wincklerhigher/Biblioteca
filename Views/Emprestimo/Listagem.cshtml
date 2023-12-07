@@ -2,19 +2,9 @@
 
 <link rel="stylesheet" href="~/css/listagem.css" />
 
-<style>
-    .atrasado {
-        background-color: #dc3545 !important;
-        color: white !important;
-    }
-
-    body .container .bg-listagem.atrasado {
-        background-color: red !important;
-    }
-</style>
-
-<div class="row">
-    <div class="col-md-12">
+<div class="row justify-content-md-center">
+    <div class="jumbotron col-6 text-center">
+        <h1 style="font-family: 'Arial', sans-serif; color: #007bff; font-size: 24px;">Bem vindo ao sistema Biblioteca</h1>
         <form asp-controller="Emprestimo" asp-action="Listagem" method="POST" class="form-inline">
             <div class="form-group mb-2">
                 <select name="TipoFiltro" class="form-control">
