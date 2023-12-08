@@ -1,19 +1,22 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Identity;    
 using System;
+using System.Threading.Tasks;
 
 namespace Biblioteca.Models
 {
     public class UsuarioService
     {
         private readonly BibliotecaContext _context;
+        private readonly UserManager<IdentityUser> _userManager;
 
-        public UsuarioService(BibliotecaContext context)
-        {
-            _context = context;
-        }
+    public UsuarioService(BibliotecaContext context, UserManager<IdentityUser> userManager)
+    {
+        _context = context;
+        _userManager = userManager;
+    }
         
         public List<Usuario> ObterTodosUsuarios()
         {
@@ -92,23 +95,26 @@ namespace Biblioteca.Models
             return false;
         }
 
-        public void CriarNovoUsuario(UsuarioViewModel usuarioViewModel)
-        {   
-            Usuario novoUsuario = new Usuario
-            {
-                Nome = usuarioViewModel.Nome,
-                Login = usuarioViewModel.Login,
-                Senha = usuarioViewModel.Senha,
-                Tipo = usuarioViewModel.Tipo
-            };
+  public async Task CriarNovoUsuario(UsuarioViewModel usuarioViewModel)
+{   
+    var novoUsuario = new IdentityUser
+    {
+        UserName = usuarioViewModel.Login,
+        // Outras propriedades do IdentityUser, se necessário
+    };
 
-            _context.Usuarios.Add(novoUsuario);
-            _context.SaveChanges();
-        }
+    var result = await _userManager.CreateAsync(novoUsuario, usuarioViewModel.Senha);
 
-        internal object ObterUsuarioPorId(string usuarioAtualId)
+    if (result.Succeeded)
+    {
+        await _userManager.AddToRoleAsync(novoUsuario, "Padrao");
+    }
+    else
+    {
+        foreach (var error in result.Errors)
         {
-            throw new NotImplementedException();
-        }
+            System.Diagnostics.Trace.WriteLine($"Erro ao criar usuário: {error.Description}");        }
+    }
+}
     }
 }

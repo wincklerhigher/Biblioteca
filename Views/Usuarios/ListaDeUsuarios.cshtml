@@ -1,41 +1,43 @@
 @model Biblioteca.Models.UsuarioViewModel
 
-<h1>Lista de Usuários</h1>
+<div class="container mt-4">
+    <h1>Lista de Usuários</h1>
 
-@if (Model != null && Model.Usuarios != null && Model.Usuarios.Any())
-{
-    <table>
-        <thead>
-            <tr>
-                <th>Nome</th>
-                <th>Login</th>
-                <th>Tipo</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var usuario in Model.Usuarios)
-            {
+    @if (Model != null && Model.Usuarios != null && Model.Usuarios.Any())
+    {
+        <table class="table">
+            <thead>
                 <tr>
-                    <td>@usuario.Nome</td>
-                    <td>@usuario.Login</td>
-                    <td>@(usuario.Tipo == UsuarioTipo.ADMIN ? "Admin" : "Padrão")</td>
-                    <td>
-                        <a href="@Url.Action("Editar", "Usuarios", new { id = usuario.Id })">Editar</a> |
-                        <a href="@Url.Action("Excluir", "Usuarios", new { id = usuario.Id })">Excluir</a>
-                    </td>
+                    <th>Nome</th>
+                    <th>Login</th>
+                    <th>Tipo</th>
+                    <th>Ações</th>
                 </tr>
-            }
-        </tbody>
-    </table>
-}
-else
-{
-    <p>Nenhum usuário disponível.</p>
-}
+            </thead>
+            <tbody>
+                @foreach (var usuario in Model.Usuarios)
+                {
+                    <tr>
+                        <td>@usuario.Nome</td>
+                        <td>@usuario.Login</td>
+                        <td>@(usuario.Tipo == UsuarioTipo.ADMIN ? "Admin" : "Padrão")</td>
+                        <td>
+                            <a class="btn btn-primary" href="@Url.Action("Editar", "Usuarios", new { id = usuario.Id })">Editar</a>
+                            <a class="btn btn-danger" href="@Url.Action("Excluir", "Usuarios", new { id = usuario.Id })">Excluir</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p>Nenhum usuário disponível.</p>
+    }
 
-@using (Html.BeginForm("RegistrarUsuarios", "Usuarios", FormMethod.Post))
-{
-    @Html.AntiForgeryToken()
-    <button type="submit">Criar Novo Usuário</button>
-}
+    @using (Html.BeginForm("RegistrarUsuarios", "Usuarios", FormMethod.Post, new { @class = "form-inline" }))
+    {
+        @Html.AntiForgeryToken()
+        <button type="submit" class="btn btn-success">Criar Novo Usuário</button>
+    }
+</div>

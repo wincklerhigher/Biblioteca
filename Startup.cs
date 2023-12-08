@@ -20,61 +20,56 @@ namespace Biblioteca
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
-      public void ConfigureServices(IServiceCollection services)
-{          
+        public void ConfigureServices(IServiceCollection services)
+        {          
+            services.AddAuthentication(options =>
+            {
+                options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            })
+            .AddCookie(options =>
+            {
+                options.LoginPath = "/Usuarios/Login";    
+                options.AccessDeniedPath = "/Usuarios/AcessoNegado";
+            });
 
-        services.AddAuthentication(options =>
-{
-    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-    options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-    options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-})
-.AddCookie(options =>
-{
-    options.LoginPath = "/Home/Login";
-});
+            services.AddDbContext<BibliotecaContext>(options =>
+                options.UseMySql(Configuration.GetConnectionString("DefaultConnection"),
+                new MySqlServerVersion(new Version(8, 0, 23))));
 
-        services.AddDbContext<BibliotecaContext>(options =>
-        options.UseMySql(Configuration.GetConnectionString("DefaultConnection"),
-        new MySqlServerVersion(new Version(8, 0, 23))));
+            services.AddIdentity<IdentityUser, IdentityRole>(options =>
+            {
+                options.Password.RequireDigit = true;
+                options.Password.RequireLowercase = true;
+                options.Password.RequireUppercase = true;
+                options.Password.RequireNonAlphanumeric = true;
+                options.Password.RequiredLength = 8;
 
-        services.AddIdentity<IdentityUser, IdentityRole>(options =>
-    {
-        // Configurações do Identity
-        options.Password.RequireDigit = true;
-        options.Password.RequireLowercase = true;
-        options.Password.RequireUppercase = true;
-        options.Password.RequireNonAlphanumeric = true;
-        options.Password.RequiredLength = 8;
+                options.Lockout.MaxFailedAccessAttempts = 5;
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+            })
+            .AddEntityFrameworkStores<BibliotecaContext>()
+            .AddDefaultTokenProviders();
 
-        options.Lockout.MaxFailedAccessAttempts = 5;
-        options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
-    })
-    .AddEntityFrameworkStores<BibliotecaContext>()
-    .AddDefaultTokenProviders();
+            services.AddAuthorization(options =>
+         {       
+            options.AddPolicy("EditPolicy", policy =>
+         {            
+            policy.RequireRole("Admin");
+         });
+                 });
 
-    // Adicionar a configuração de autorização fora do bloco AddIdentity
-    services.AddAuthorization(options =>
-    {
-        options.AddPolicy("AdminOnly", policy =>
-        {
-            policy.RequireRole("admin");
-        });
-    });
+            services.AddControllersWithViews(options => { options.SuppressAsyncSuffixInActionNames = false; });
 
-    services.AddControllersWithViews(options => { options.SuppressAsyncSuffixInActionNames = false; });
+            services.AddDistributedMemoryCache();
+            services.AddSession();
+            services.AddScoped<EmprestimoService>();
+            services.AddScoped<UsuarioService>();
+            services.AddScoped<LivroService>();
+        }
 
-    services.AddDistributedMemoryCache();
-    services.AddSession();
-    services.AddControllersWithViews();    
-    services.AddScoped<EmprestimoService>();
-    services.AddScoped<UsuarioService>();
-    services.AddScoped<LivroService>();
-}
-
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
@@ -85,13 +80,13 @@ namespace Biblioteca
             {
                 app.UseExceptionHandler("/Home/Error");
             }
+
             app.UseStaticFiles();
 
             app.UseRouting();
 
             app.UseAuthentication();
-
-            app.UseAuthorization();
+            app.UseAuthorization();           
 
             app.UseSession();
 
@@ -99,8 +94,8 @@ namespace Biblioteca
             {
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}");                    
-                });
-     }
-   }
+                    pattern: "{controller=Home}/{action=Index}/{id?}");
+            });
+        }
+    }
 }

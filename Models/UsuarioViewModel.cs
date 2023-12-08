@@ -20,6 +20,8 @@ namespace Biblioteca.Models
         [Compare("Senha", ErrorMessage = "As senhas não coincidem.")]
         public string ConfirmarSenha { get; set; }
 
+        public string UsuarioLogado { get; set; }
+
         [Required(ErrorMessage = "O campo Tipo é obrigatório.")]
         [Display(Name = "Tipo")]
         public UsuarioTipo Tipo { get; set; }

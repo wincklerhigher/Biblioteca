@@ -4,10 +4,10 @@
 }
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewData["Title"] - Biblioteca</title>
 
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
@@ -15,56 +15,57 @@
 
 </head>
 <body>
-    <header>
-    @if (isLoggedin)
-    {
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-dark border-bottom box-shadow mb-3">
-            <div class="container">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Biblioteca</a>
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item dropdown">
-                            <a class="nav-link text-light dropdown-toggle" data-toggle="dropdown" href="#" id="livrosDropdown">Livros</a>
-                            <div class="dropdown-menu" aria-labelledby="livrosDropdown">
-                                <a class="dropdown-item" href="/Livro/Cadastro">Cadastro</a>
-                                <a class="dropdown-item" href="/Livro/Listagem">Listagem</a>
-                            </div>
-                        </li>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link text-light dropdown-toggle" data-toggle="dropdown" href="#" id="emprestimoDropdown">Emprestimo</a>
-                            <div class="dropdown-menu" aria-labelledby="emprestimoDropdown">
-                                <a class="dropdown-item" href="/Emprestimo/Listagem">Listagem</a>
-                                <a class="dropdown-item" href="/Emprestimo/Cadastro">Cadastro</a>
-                            </div>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-light" asp-area="" asp-controller="Usuarios" asp-action="ListaDeUsuarios">Usuários</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-light" asp-area="" asp-controller="Usuarios" asp-action="Logout">Logout</a>
-                        </li>
-                    </ul>
+    <header>    
+        @if (isLoggedin && !isRegistration)
+        {
+            <nav class="navbar navbar-expand-sm navbar-dark bg-dark border-bottom box-shadow mb-3">
+                <div class="container">
+                    <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Biblioteca</a>
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                            aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
+                        <ul class="navbar-nav flex-grow-1">
+                            <li class="nav-item dropdown">
+                                <a class="nav-link text-light dropdown-toggle" data-toggle="dropdown" href="#" id="livrosDropdown">Livros</a>
+                                <div class="dropdown-menu" aria-labelledby="livrosDropdown">
+                                    <a class="dropdown-item" href="/Livro/Cadastro">Cadastro</a>
+                                    <a class="dropdown-item" href="/Livro/Listagem">Listagem</a>
+                                </div>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link text-light dropdown-toggle" data-toggle="dropdown" href="#" id="emprestimoDropdown">Emprestimo</a>
+                                <div class="dropdown-menu" aria-labelledby="emprestimoDropdown">
+                                    <a class="dropdown-item" href="/Emprestimo/Listagem">Listagem</a>
+                                    <a class="dropdown-item" href="/Emprestimo/Cadastro">Cadastro</a>
+                                </div>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-light" asp-area="" asp-controller="Usuarios" asp-action="ListaDeUsuarios">Usuários</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-light" asp-area="" asp-controller="Usuarios" asp-action="Logout">Logout</a>
+                            </li>                        
+                        </ul>
+                    </div>
                 </div>
-            </div>
-        </nav>
-    }
-    else if (!isRegistration)
-    {
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-dark border-bottom box-shadow mb-3">
-            <div class="container">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Biblioteca</a>
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-            </div>
-        </nav>
-    }    
-</header>
+            </nav>
+        }
+        else if (!isRegistration)
+        {
+            <nav class="navbar navbar-expand-sm navbar-dark bg-dark border-bottom box-shadow mb-3">
+                <div class="container">
+                    <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Biblioteca</a>
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                            aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                </div>
+            </nav>
+        }    
+    </header>
+    
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()
@@ -73,7 +74,7 @@
 
     <footer class="border-top footer text-muted">
         <div class="container">
-            &copy; 2019 - Biblioteca - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            &copy; @DateTime.Now.Year - Biblioteca - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
 

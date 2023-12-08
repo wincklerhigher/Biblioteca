@@ -1,6 +1,6 @@
 @model Biblioteca.Models.UsuarioViewModel
 
-<h1>Editar Usuário</h1>
+<h2>Editar Usuário</h2>
 
 <form method="post">
     <input type="hidden" asp-for="Id" />
@@ -15,9 +15,9 @@
     <input type="password" asp-for="Senha" required />
 
     <div class="form-group">
-    <label asp-for="Tipo" class="control-label"></label>
-    @Html.DropDownListFor(model => model.Tipo, Model.TiposDisponiveis, "Selecione...", new { @class = "form-control" })
-    <span asp-validation-for="Tipo" class="text-danger"></span>
+        <label asp-for="Tipo" class="control-label"></label>
+        @Html.DropDownListFor(model => model.Tipo, Model.TiposDisponiveis, "Selecione...", new { @class = "form-control" })
+        <span asp-validation-for="Tipo" class="text-danger"></span>
     </div>
 
     <button type="submit">Salvar</button>

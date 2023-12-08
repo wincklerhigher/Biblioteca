@@ -9,18 +9,22 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Identity;
+using System.Threading.Tasks;
 
 namespace Biblioteca.Controllers
 {        
     public class UsuariosController : Controller
     {        
-        private readonly UsuarioService _usuarioService;
+        private readonly UsuarioService _usuarioService;        
+        private readonly UserManager<IdentityUser> _userManager;
 
-        public UsuariosController(UsuarioService usuarioService)
-        {
-            _usuarioService = usuarioService;
-        }
-      
+public UsuariosController(UsuarioService usuarioService, UserManager<IdentityUser> userManager)
+{
+    _usuarioService = usuarioService;
+    _userManager = userManager;
+}
+
         public IActionResult ListaDeUsuarios()
     {
     Autenticacao.CheckLogin(this);
@@ -45,17 +49,22 @@ namespace Biblioteca.Controllers
         }
 
         [HttpPost]
-        public IActionResult RegistrarUsuarios(UsuarioViewModel usuario)
+        [ValidateAntiForgeryToken]
+    public async Task<IActionResult> RegistrarUsuarios(UsuarioViewModel usuario)
+        {    
+    if (User.IsInRole("Admin"))
+    {
+        if (ModelState.IsValid)
         {
-            if (ModelState.IsValid)
-            {
-                _usuarioService.CriarNovoUsuario(usuario);
+            await _usuarioService.CriarNovoUsuario(usuario);
 
-                return RedirectToAction("ListaDeUsuarios");
-            }
-
-            return View(usuario);
+            return RedirectToAction("ListaDeUsuarios");
         }
+
+        return View(usuario);
+    }
+    return RedirectToAction("AcessoNegado", "Usuarios");
+    }
 
         [HttpPost]
         [ValidateAntiForgeryToken]        
@@ -85,7 +94,7 @@ namespace Biblioteca.Controllers
    public IActionResult Editar(int id)
 {
     var usuario = _usuarioService.ObterUsuarioPorId(id);
-
+    
     var tiposDisponiveis = Enum.GetValues(typeof(UsuarioTipo))
         .Cast<UsuarioTipo>()
         .Select(t => new SelectListItem { Value = t.ToString(), Text = t.ToString() })
@@ -208,7 +217,7 @@ public IActionResult Login(LoginViewModel model)
     {
         var claims = new List<Claim>
         {
-            new Claim(ClaimTypes.Name, model.UserName)
+        new Claim(ClaimTypes.Name, model.UserName)
         };
 
         var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);

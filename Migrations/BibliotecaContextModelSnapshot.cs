@@ -5,6 +5,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
+#nullable disable
+
 namespace Biblioteca.Migrations
 {
     [DbContext(typeof(BibliotecaContext))]
@@ -48,7 +50,7 @@ namespace Biblioteca.Migrations
 
                     b.HasIndex("LivroId");
 
-                    b.ToTable("Emprestimos");
+                    b.ToTable("Emprestimos", (string)null);
                 });
 
             modelBuilder.Entity("Biblioteca.Models.Livro", b =>
@@ -68,7 +70,7 @@ namespace Biblioteca.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Livros");
+                    b.ToTable("Livros", (string)null);
                 });
 
             modelBuilder.Entity("Biblioteca.Models.Usuario", b =>
@@ -87,7 +89,7 @@ namespace Biblioteca.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Usuarios");
+                    b.ToTable("Usuarios", (string)null);
                 });
 
             modelBuilder.Entity("Biblioteca.Models.Emprestimo", b =>
@@ -97,6 +99,8 @@ namespace Biblioteca.Migrations
                         .HasForeignKey("LivroId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Livro");
                 });
 #pragma warning restore 612, 618
         }

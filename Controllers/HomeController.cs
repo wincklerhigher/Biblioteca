@@ -30,8 +30,8 @@ namespace Biblioteca.Controllers
         }
 
         [HttpPost]
-public IActionResult Login(string login, string senha, [FromServices] DbContextOptions<BibliotecaContext> options)
-{
+        public IActionResult Login(string login, string senha, [FromServices] DbContextOptions<BibliotecaContext> options)
+        {
     using (var contexto = new BibliotecaContext(options))
     {
         var usuario = contexto.Usuarios.FirstOrDefault(u => u.Login == login && u.Senha == senha);
@@ -46,7 +46,7 @@ public IActionResult Login(string login, string senha, [FromServices] DbContextO
             return RedirectToAction("Index");
         }
     }
-}
+}  
         public IActionResult Privacy()
         {
             return View();
