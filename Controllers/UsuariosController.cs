@@ -48,23 +48,43 @@ public UsuariosController(UsuarioService usuarioService, UserManager<IdentityUse
             return View(viewModel);
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
+    [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> RegistrarUsuarios(UsuarioViewModel usuario)
-        {    
-    if (User.IsInRole("Admin"))
+{
+    if (ModelState.IsValid)
     {
-        if (ModelState.IsValid)
+        await _usuarioService.CriarNovoUsuario(usuario);
+
+        return RedirectToAction("ListaDeUsuarios");
+    }
+
+    return View(usuario);
+}
+
+public IActionResult AcaoVerificarAutenticacao()
+{
+    if (User.Identity.IsAuthenticated)
+    {
+        string userName = User.Identity.Name; 
+        
+        bool isAdmin = User.IsInRole("Admin");
+
+        string customClaimValue = User.FindFirst("CustomClaimType")?.Value;
+
+        if (isAdmin)
         {
-            await _usuarioService.CriarNovoUsuario(usuario);
-
-            return RedirectToAction("ListaDeUsuarios");
         }
-
-        return View(usuario);
+        else
+        {         
+            return RedirectToAction("AcessoNegado", "Usuarios");
+        }
     }
-    return RedirectToAction("AcessoNegado", "Usuarios");
-    }
+    else
+    {
+    } 
+    return View();
+}
 
         [HttpPost]
         [ValidateAntiForgeryToken]        
@@ -128,7 +148,7 @@ public IActionResult Editar(UsuarioViewModel usuarioViewModel)
             .Select(t => new SelectListItem { Value = t.ToString(), Text = t.ToString() })
             .ToList();
 
-        usuarioViewModel.TiposDisponiveis = tiposDisponiveis;  // Ensure TiposDisponiveis is set
+        usuarioViewModel.TiposDisponiveis = tiposDisponiveis;  
 
         var usuario = new Usuario
         {
@@ -203,27 +223,23 @@ public IActionResult ConfirmarExclusao(int id)
             return tipos;
         }            
 
-        public IActionResult Login(string returnUrl = "/")
-{
-           return View();
-}
-
 [HttpPost]
 [ValidateAntiForgeryToken]
-public IActionResult Login(LoginViewModel model)
+public async Task<IActionResult> Login(LoginViewModel model)
 {    
     var autenticacaoValida = new AutenticacaoValida(); 
     if (autenticacaoValida.VerificarCredenciais(model)) 
     {
+        Autenticacao.CheckLogin(this);
         var claims = new List<Claim>
         {
-        new Claim(ClaimTypes.Name, model.UserName)
+            new Claim(ClaimTypes.Name, model.UserName),            
         };
 
         var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
         var principal = new ClaimsPrincipal(identity);
 
-        HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
+        await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
 
         ViewBag.IsRegistration = false;
         ViewBag.IsLoggedin = true; 
@@ -235,8 +251,8 @@ public IActionResult Login(LoginViewModel model)
     return View(model);
 }
 
-       [HttpGet]
-public IActionResult Logout()
+    [HttpGet]
+    public IActionResult Logout()
 {
     Autenticacao.CheckLogin(this);
     HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
