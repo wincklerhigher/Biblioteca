@@ -49,22 +49,18 @@ public UsuariosController(UsuarioService usuarioService, UserManager<IdentityUse
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
-    public async Task<IActionResult> RegistrarUsuarios(UsuarioViewModel usuario)
-        {    
-    if (User.IsInRole("Admin"))
+[ValidateAntiForgeryToken]
+public async Task<IActionResult> RegistrarUsuarios(UsuarioViewModel usuario)
+{    
+    if (ModelState.IsValid)
     {
-        if (ModelState.IsValid)
-        {
-            await _usuarioService.CriarNovoUsuario(usuario);
-
-            return RedirectToAction("ListaDeUsuarios");
-        }
-
-        return View(usuario);
+        await _usuarioService.CriarNovoUsuario(usuario);
+        return RedirectToAction("ListaDeUsuarios");
     }
-    return RedirectToAction("AcessoNegado", "Usuarios");
-    }
+
+    return View(usuario);
+}
+
 
        [HttpPost]
 [ValidateAntiForgeryToken]        
