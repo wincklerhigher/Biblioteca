@@ -235,20 +235,18 @@ public IActionResult Login(LoginViewModel model)
     return View(model);
 }
 
-        [HttpGet]
-        public IActionResult Logout()
-        {
-            Autenticacao.CheckLogin(this);
-            HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            return View();
-        }
+       [HttpGet]
+public IActionResult Logout()
+{
+    Autenticacao.CheckLogin(this);
+    HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+    return View();
+}
 
-     [HttpPost]
+[HttpPost]
 [ValidateAntiForgeryToken]
 public IActionResult LogoutConfirmado() 
 {       
-    Response.Cookies.Delete("oidc");
-
     return RedirectToAction("Login", "Home");
 }
     }
