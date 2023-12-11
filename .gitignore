@@ -1,3 +1,4 @@
 #bin e obj diretórios
 bin/
 obj/
+node_modules/
