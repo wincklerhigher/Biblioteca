@@ -47,44 +47,38 @@ public UsuariosController(UsuarioService usuarioService, UserManager<IdentityUse
 
             return View(viewModel);
         }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-    public async Task<IActionResult> RegistrarUsuarios(UsuarioViewModel usuario)
-        {    
-    if (User.IsInRole("Admin"))
+[HttpPost]
+[ValidateAntiForgeryToken]
+public async Task<IActionResult> RegistrarUsuarios(UsuarioViewModel usuario)
+{    
+    if (ModelState.IsValid)
     {
-        if (ModelState.IsValid)
-        {
-            await _usuarioService.CriarNovoUsuario(usuario);
-
-            return RedirectToAction("ListaDeUsuarios");
-        }
-
-        return View(usuario);
-    }
-    return RedirectToAction("AcessoNegado", "Usuarios");
+        await _usuarioService.CriarNovoUsuario(usuario);
+        return RedirectToAction("ListaDeUsuarios");
     }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]        
-        public IActionResult Criar(Usuario usuario)
-        {
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _usuarioService.AdicionarUsuario(usuario);
-                    return RedirectToAction(nameof(Index));
-                }
-                catch (Exception ex)
-                {
-                    Debug.WriteLine($"Erro ao criar usuário: {ex.Message}");
-                }
-            }
+    return View(usuario);
+}
 
-            return View(usuario);
+       [HttpPost]
+[ValidateAntiForgeryToken]        
+public async Task<IActionResult> Criar(Usuario usuario)
+{
+    if (ModelState.IsValid)
+    {
+        try
+        {
+            await _usuarioService.AdicionarUsuario(usuario);
+            return RedirectToAction(nameof(Index));
         }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Erro ao criar usuário: {ex.Message}");
+        }
+    }
+
+    return View(usuario);
+}
 
           public IActionResult AcessoNegado()
     {
@@ -128,7 +122,7 @@ public IActionResult Editar(UsuarioViewModel usuarioViewModel)
             .Select(t => new SelectListItem { Value = t.ToString(), Text = t.ToString() })
             .ToList();
 
-        usuarioViewModel.TiposDisponiveis = tiposDisponiveis;  // Ensure TiposDisponiveis is set
+        usuarioViewModel.TiposDisponiveis = tiposDisponiveis;  
 
         var usuario = new Usuario
         {
@@ -210,20 +204,20 @@ public IActionResult ConfirmarExclusao(int id)
 
 [HttpPost]
 [ValidateAntiForgeryToken]
-public IActionResult Login(LoginViewModel model)
+public async Task<IActionResult> Login(LoginViewModel model)
 {    
     var autenticacaoValida = new AutenticacaoValida(); 
     if (autenticacaoValida.VerificarCredenciais(model)) 
     {
         var claims = new List<Claim>
         {
-        new Claim(ClaimTypes.Name, model.UserName)
+            new Claim(ClaimTypes.Name, model.UserName)
         };
 
         var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
         var principal = new ClaimsPrincipal(identity);
 
-        HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
+        await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
 
         ViewBag.IsRegistration = false;
         ViewBag.IsLoggedin = true; 
