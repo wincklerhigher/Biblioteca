@@ -55,7 +55,7 @@ namespace Biblioteca
 
             services.AddAuthorization(options =>
          {       
-            options.AddPolicy("EditPolicy", policy =>
+            options.AddPolicy("RequireADMINRole", policy =>
          {            
             policy.RequireRole("Admin");
          });

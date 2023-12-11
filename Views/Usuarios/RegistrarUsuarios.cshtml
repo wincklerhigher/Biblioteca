@@ -20,7 +20,16 @@
         <option value="@UsuarioTipo.PADRAO">Padrão</option>
     </select>
 
-    <button type="submit">Registrar</button>
+    <button type="submit" onclick="verificarSenha()">Registrar</button>
+
+    <script>
+        function verificarSenha() {
+            var senha = document.getElementById("Senha").value;
+            if (senha.length < 6 || senha.length > 8) {
+                alert("A senha deve ter de 6 a 8 caracteres!");
+            }
+        }
+    </script>
 </form>
 
 <a asp-action="ListaDeUsuarios">Cancelar</a>

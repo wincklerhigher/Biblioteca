@@ -15,9 +15,11 @@ namespace Biblioteca.Models
         public string Login { get; set; }
 
         [Required(ErrorMessage = "O campo Senha é obrigatório.")]
+        [StringLength(8, MinimumLength = 6, ErrorMessage = "A senha deve ter de 6 a 8 caracteres.")]
         public string Senha { get; set; }
 
         [Compare("Senha", ErrorMessage = "As senhas não coincidem.")]
+        [StringLength(8, MinimumLength = 6, ErrorMessage = "A senha deve ter de 6 a 8 caracteres.")]
         public string ConfirmarSenha { get; set; }
 
         public string UsuarioLogado { get; set; }

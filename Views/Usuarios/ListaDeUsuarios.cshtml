@@ -20,7 +20,7 @@
                     <tr>
                         <td>@usuario.Nome</td>
                         <td>@usuario.Login</td>
-                        <td>@(usuario.Tipo == UsuarioTipo.ADMIN ? "Admin" : "Padrão")</td>
+                        <td>@(usuario.Tipo == UsuarioTipo.ADMIN ? "Administrador" : "Padrão")</td>
                         <td>
                             <a class="btn btn-primary" href="@Url.Action("Editar", "Usuarios", new { id = usuario.Id })">Editar</a>
                             <a class="btn btn-danger" href="@Url.Action("Excluir", "Usuarios", new { id = usuario.Id })">Excluir</a>
