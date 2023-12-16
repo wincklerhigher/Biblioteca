@@ -1,4 +1,5 @@
 using System;
+using Biblioteca.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
@@ -11,7 +12,7 @@ namespace Biblioteca
         public static void Main(string[] args)
         {
             string senha = "senha123";
-            string hashSenha = PasswordHasher.HashPassword(senha);
+            string hashSenha = Criptografo.TextoCriptografado(senha);
 
             Console.WriteLine("Senha: " + senha);
             Console.WriteLine("Hash MD5: " + hashSenha);

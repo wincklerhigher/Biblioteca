@@ -1,22 +1,26 @@
+using System;
 using System.Security.Cryptography;
 using System.Text;
 
-public static class PasswordHasher
+namespace Biblioteca.Models
 {
-    public static string HashPassword(string password)
+    public static class Criptografo
     {
-        using (MD5 md5 = MD5.Create())
+        public static string TextoCriptografado(string textoSemFormatacao)
         {
-            byte[] inputBytes = Encoding.UTF8.GetBytes(password);
-            byte[] hashBytes = md5.ComputeHash(inputBytes);
+            MD5 MD5Hasher = MD5.Create();
+            byte[] bytes = Encoding.Default.GetBytes(textoSemFormatacao);
+            byte[] bytecriptografado = MD5Hasher.ComputeHash(bytes);
 
-            StringBuilder builder = new StringBuilder();
-            for (int i = 0; i < hashBytes.Length; i++)
+            StringBuilder SB = new StringBuilder();
+
+            foreach (byte b in bytecriptografado)
             {
-                builder.Append(hashBytes[i].ToString("x2"));
+                string DebugB = b.ToString("x2");
+                SB.Append(DebugB);
             }
 
-            return builder.ToString();
+            return SB.ToString();
         }
     }
 }
