@@ -1,6 +1,6 @@
 using System;
 using Microsoft.AspNetCore.Identity;
-using Biblioteca.Models; 
+using Biblioteca.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 
 namespace Biblioteca
 {
@@ -36,8 +37,10 @@ namespace Biblioteca
             });
 
             services.AddDbContext<BibliotecaContext>(options =>
-                options.UseMySql(Configuration.GetConnectionString("DefaultConnection"),
-                new MySqlServerVersion(new Version(8, 0, 23))));
+                options.UseMySql(Configuration.GetConnectionString("DefaultConnection"), mySqlOptions => 
+                {
+                    mySqlOptions.ServerVersion(new Version(8, 0, 23), ServerType.MySql);
+                }));
 
             services.AddIdentity<IdentityUser, IdentityRole>(options =>
             {
@@ -54,12 +57,12 @@ namespace Biblioteca
             .AddDefaultTokenProviders();
 
             services.AddAuthorization(options =>
-         {       
-            options.AddPolicy("RequireADMINRole", policy =>
-         {            
-            policy.RequireRole("Admin");
-         });
-                 });
+            {       
+                options.AddPolicy("RequireADMINRole", policy =>
+                {            
+                    policy.RequireRole("Admin");
+                });
+            });
 
             services.AddControllersWithViews(options => { options.SuppressAsyncSuffixInActionNames = false; });
 
@@ -69,7 +72,7 @@ namespace Biblioteca
             services.AddScoped<UsuarioService>();
             services.AddScoped<LivroService>();
         }
-
+        
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())

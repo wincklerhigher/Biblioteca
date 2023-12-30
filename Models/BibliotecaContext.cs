@@ -1,8 +1,7 @@
+using System;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography;
 using System.Text;
-using System;
-using Microsoft.Extensions.Configuration;
 using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 
 namespace Biblioteca.Models
@@ -13,27 +12,40 @@ namespace Biblioteca.Models
         public DbSet<Emprestimo> Emprestimos { get; set; }
         public DbSet<Usuario> Usuarios { get; set; }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {            
-            string connectionString ="Server=localhost;Database=Biblioteca;User=root;Password=;";
-
-            optionsBuilder.UseMySql(connectionString, new MySqlServerVersion(new Version(8, 0, 23)));
-        }
-
         public BibliotecaContext(DbContextOptions<BibliotecaContext> options) : base(options)
         {
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
-{
-    modelBuilder.Entity<Usuario>()
-        .Property(u => u.Tipo)
-        .IsRequired()
-        .HasMaxLength(30)
-        .HasColumnName("Tipo")
-        .HasConversion<string>();
+        {
+            base.OnModelCreating(modelBuilder);
 
-    base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<Usuario>()
+                .Property(u => u.Tipo)
+                .IsRequired()
+                .HasMaxLength(30)
+                .HasColumnName("Tipo")
+                .HasConversion<string>();
+
+            modelBuilder.Entity<Emprestimo>()
+                .HasOne(e => e.Livro)
+                .WithMany()
+                .HasForeignKey(e => e.LivroId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .IsRequired();
+        }
+
+      protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+{            
+    if (!optionsBuilder.IsConfigured)
+    {
+        string connectionString = "Server=localhost;Database=Biblioteca;User=root;";
+
+        optionsBuilder.UseMySql(connectionString, mySqlOptions => 
+        {
+            mySqlOptions.ServerVersion(new Version(8, 0, 23), ServerType.MySql);
+        });
+    }
 }
 
         // Método para criar um hash MD5 da senha do usuário
@@ -52,10 +64,6 @@ namespace Biblioteca.Models
 
                 return sb.ToString();
             }
-        }
-
-        public void SeedData()
-        {
-        }
+        }        
     }
 }

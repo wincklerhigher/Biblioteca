@@ -3,7 +3,6 @@ using System;
 using Biblioteca.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
@@ -19,89 +18,87 @@ namespace Biblioteca.Migrations
                 .HasAnnotation("ProductVersion", "3.0.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
-            modelBuilder.Entity("Biblioteca.Models.Emprestimo", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+            modelBuilder.Entity<Emprestimo>(entity =>
+            {
+                entity.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    b.Property<DateTime?>("DataDevolucao")
-                        .HasColumnType("datetime(6)");
+                entity.Property<DateTime?>("DataDevolucao")
+                    .HasColumnType("datetime(6)");
 
-                    b.Property<DateTime>("DataEmprestimo")
-                        .HasColumnType("datetime(6)");
+                entity.Property<DateTime>("DataEmprestimo")
+                    .HasColumnType("datetime(6)");
 
-                    b.Property<bool>("Devolvido")
-                        .HasColumnType("tinyint(1)");
+                entity.Property<bool>("Devolvido")
+                    .HasColumnType("tinyint(1)");
 
-                    b.Property<string>("Estado")
-                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+                entity.Property<string>("Estado")
+                    .HasColumnType("longtext CHARACTER SET utf8mb4");
 
-                    b.Property<int>("LivroId")
-                        .HasColumnType("int");
+                entity.Property<int>("LivroId")
+                    .HasColumnType("int");
 
-                    b.Property<string>("NomeUsuario")
-                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+                entity.Property<string>("NomeUsuario")
+                    .HasColumnType("longtext CHARACTER SET utf8mb4");
 
-                    b.Property<string>("Telefone")
-                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+                entity.Property<string>("Telefone")
+                    .HasColumnType("longtext CHARACTER SET utf8mb4");
 
-                    b.HasKey("Id");
+                entity.HasKey("Id");
 
-                    b.HasIndex("LivroId");
+                entity.HasIndex("LivroId");
 
-                    b.ToTable("Emprestimos", (string)null);
-                });
+                entity.ToTable("Emprestimos", (string)null);
+            });
 
-            modelBuilder.Entity("Biblioteca.Models.Livro", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+            modelBuilder.Entity<Livro>(entity =>
+            {
+                entity.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    b.Property<int>("Ano")
-                        .HasColumnType("int");
+                entity.Property<int>("Ano")
+                    .HasColumnType("int");
 
-                    b.Property<string>("Autor")
-                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+                entity.Property<string>("Autor")
+                    .HasColumnType("longtext CHARACTER SET utf8mb4");
 
-                    b.Property<string>("Titulo")
-                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+                entity.Property<string>("Titulo")
+                    .HasColumnType("longtext CHARACTER SET utf8mb4");
 
-                    b.HasKey("Id");
+                entity.HasKey("Id");
 
-                    b.ToTable("Livros", (string)null);
-                });
+                entity.ToTable("Livros", (string)null);
+            });
 
-            modelBuilder.Entity("Biblioteca.Models.Usuario", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+            modelBuilder.Entity<Usuario>(entity =>
+            {
+                entity.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    b.Property<string>("PasswordHash")
-                        .IsRequired()
-                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+                entity.Property<string>("PasswordHash")
+                    .IsRequired()
+                    .HasColumnType("longtext CHARACTER SET utf8mb4");
 
-                    b.Property<string>("Username")
-                        .IsRequired()
-                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+                entity.Property<string>("Username")
+                    .IsRequired()
+                    .HasColumnType("longtext CHARACTER SET utf8mb4");
 
-                    b.HasKey("Id");
+                entity.HasKey("Id");
 
-                    b.ToTable("Usuarios", (string)null);
-                });
+                entity.ToTable("Usuarios", (string)null);
+            });
 
-            modelBuilder.Entity("Biblioteca.Models.Emprestimo", b =>
-                {
-                    b.HasOne("Biblioteca.Models.Livro", "Livro")
-                        .WithMany()
-                        .HasForeignKey("LivroId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Livro");
-                });
+            modelBuilder.Entity<Emprestimo>(entity =>
+            {
+                entity.HasOne<Livro>("Livro")
+                    .WithMany()
+                    .HasForeignKey("LivroId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
+            });
 #pragma warning restore 612, 618
         }
     }
