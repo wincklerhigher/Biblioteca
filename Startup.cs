@@ -65,7 +65,7 @@ namespace Biblioteca
             });
 
             services.AddControllersWithViews(options => { options.SuppressAsyncSuffixInActionNames = false; });
-
+            
             services.AddDistributedMemoryCache();
             services.AddSession();
             services.AddScoped<EmprestimoService>();

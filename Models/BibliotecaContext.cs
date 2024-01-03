@@ -3,17 +3,26 @@ using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography;
 using System.Text;
 using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
+using Microsoft.Extensions.Configuration;
 
 namespace Biblioteca.Models
 {
     public class BibliotecaContext : DbContext
     {
+
+        private readonly IConfiguration _configuration;
+
+        public BibliotecaContext(DbContextOptions<BibliotecaContext> options, IConfiguration configuration)
+            : base(options)
+        {
+            _configuration = configuration;
+        }
+
         public DbSet<Livro> Livros { get; set; }
         public DbSet<Emprestimo> Emprestimos { get; set; }
         public DbSet<Usuario> Usuarios { get; set; }
 
-        public BibliotecaContext(DbContextOptions<BibliotecaContext> options) : base(options)
-        {
+        public BibliotecaContext(DbContextOptions<BibliotecaContext> options) : base(options)      {
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -39,7 +48,7 @@ namespace Biblioteca.Models
 {            
     if (!optionsBuilder.IsConfigured)
     {
-        string connectionString = "Server=localhost;Database=Biblioteca;User=root;";
+        string connectionString = _configuration.GetConnectionString("DefaultConnection");
 
         optionsBuilder.UseMySql(connectionString, mySqlOptions => 
         {
