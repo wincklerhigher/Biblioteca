@@ -2,16 +2,19 @@ using System;
 using Biblioteca.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Biblioteca.Controllers
 {
     public class LivroController : Controller
     {
         private readonly LivroService _livroService;
+        private readonly BibliotecaContext _context;
 
-        public LivroController(LivroService livroService)
+        public LivroController(LivroService livroService, BibliotecaContext context)
         {
             _livroService = livroService;
+            _context = context;
         }
 
         private const int ItensPorPagina = 10;
@@ -65,5 +68,37 @@ namespace Biblioteca.Controllers
             Livro l = _livroService.ObterPorId(id);
             return View(l);
         }
+
+        [HttpPost]
+    public IActionResult Excluir(int id)
+    {
+        var livro = _context.Livros.Find(id);
+
+        if (livro == null)
+        {
+            return NotFound(); 
+        }
+
+        _context.Livros.Remove(livro);
+        _context.SaveChanges();
+
+        return RedirectToAction("Listagem"); 
+    }
+
+     [HttpPost]
+    public async Task<IActionResult> ExcluirConfirmado(int id)
+    {
+        var livro = await _context.Livros.FindAsync(id);
+
+        if (livro == null)
+        {
+            return NotFound(); 
+        }
+
+        _context.Livros.Remove(livro);
+        await _context.SaveChangesAsync();
+
+        return RedirectToAction("Listagem"); 
+}
     }
 }

@@ -1,5 +1,9 @@
 @model CadEmprestimoViewModel
 
+@section scripts {    
+    <script src="/js/listagem.js" defer></script>  
+}
+
 <div class="container">
     <div class="row justify-content-md-center">
         <div class="col-md-8">
@@ -30,6 +34,7 @@
                         <th>Data Devolução</th>
                         <th>Livro</th>
                         <th>Autor</th>
+                        <th>Devolvido</th> 
                         <th>Ações</th>
                     </tr>
                 </thead>
@@ -37,22 +42,31 @@
                     @for (int i = 0; i < Model.Emprestimos.Count; i++)
                     {
                         var e = Model.Emprestimos[i];
-                        <tr style="@(IsLoanExpired(e) ? "background-color: #ffcccc; font-weight: bold;" : "")">
-                            <td>@e.Id</td>
-                            <td>@e.NomeUsuario</td>
-                            <td>@e.DataEmprestimo.ToString("dd/MM/yyyy")</td>
-                            <td style="@(IsDataDevolucaoExpired(e) ? "background-color: #ff9999; font-weight: bold;" : "")">@GetFormattedDataDevolucao(e)</td>
-                            <td>@(e.Livro != null ? e.Livro.Titulo : "")</td>
-                            <td>@(e.Livro != null ? e.Livro.Autor : "")</td>
-                            <td>
-                                <div class="btn-acoes">
-                                    <a asp-controller="Emprestimo" asp-action="Edicao" asp-route-id="@e.Id" class="btn btn-info btn-sm">Editar</a>
-                                </div>
-                                <div class="btn-acoes">
-                                    <a asp-controller="Emprestimo" asp-action="Apagar" asp-route-id="@e.Id" class="btn btn-danger btn-sm">Apagar</a>
-                                </div>
-                            </td>
-                        </tr>
+                       <tr style="@(IsLoanExpired(e) ? "background-color: #ffcccc; font-weight: bold;" : "")">
+    <td>@e.Id</td>
+    <td>@e.NomeUsuario</td>
+    <td>@e.DataEmprestimo.ToString("dd/MM/yyyy")</td>
+    <td style="@(IsDataDevolucaoExpired(e) ? "background-color: #ff9999; font-weight: bold;" : "")">@GetFormattedDataDevolucao(e)</td>
+    <td>@(e.Livro != null ? e.Livro.Titulo : "")</td>
+    <td>@(e.Livro != null ? e.Livro.Autor : "")</td>
+    <td>
+        <div class="form-check form-switch">
+            <input type="checkbox" class="form-check-input checkboxDevolvido"
+                   data-emprestimo-id="@e.Id" @(e.Devolvido ? "checked" : "") />
+            <label class="form-check-label devolvido-label"
+                   data-emprestimo-id="@e.Id"
+                   style="color: @(GetDevolvidoStatusColor(e))">@GetDevolvidoStatus(e)</label>
+        </div>
+    </td>
+    <td>
+        <div class="btn-acoes">
+            <a asp-controller="Emprestimo" asp-action="Edicao" asp-route-id="@e.Id" class="btn btn-info btn-sm">Editar</a>
+        </div>
+        <div class="btn-acoes">
+            <a asp-controller="Emprestimo" asp-action="Apagar" asp-route-id="@e.Id" class="btn btn-danger btn-sm">Apagar</a>
+        </div>
+    </td>
+</tr>
                     }
                 </tbody>
             </table>
@@ -73,20 +87,21 @@
 
     string GetFormattedDataDevolucao(Emprestimo emprestimo)
     {
-        if (emprestimo.DataDevolucao.HasValue)
+        if (emprestimo.DataDevolucao.HasValue && IsDataDevolucaoExpired(emprestimo))
         {
-            if (IsDataDevolucaoExpired(emprestimo))
-            {
-                return emprestimo.DataDevolucao.Value.ToString("dd/MM/yyyy");
-            }
-            else
-            {
-                return emprestimo.DataDevolucao.Value.ToString("dd/MM/yyyy");
-            }
+            return emprestimo.DataDevolucao.Value.ToString("dd/MM/yyyy");
         }
-        else
-        {
-            return "";
-        }
-    }
+
+        return "";
+    }         
+     
+  string GetDevolvidoStatus(Emprestimo emprestimo)
+{
+    return emprestimo.Devolvido ? "Devolvido" : "Não Devolvido";
+}
+
+string GetDevolvidoStatusColor(Emprestimo emprestimo)
+{
+    return emprestimo.Devolvido ? "green" : "red";
+}
 }

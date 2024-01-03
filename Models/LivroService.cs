@@ -1,5 +1,6 @@
 using System.Linq;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Biblioteca.Models
 {
@@ -21,11 +22,23 @@ namespace Biblioteca.Models
         public void Atualizar(Livro l)
         {
             Livro livro = _context.Livros.Find(l.Id);
-            livro.Autor = l.Autor;
-            livro.Titulo = l.Titulo;
-
-            _context.SaveChanges();
+            if (livro != null)
+            {
+                livro.Autor = l.Autor;
+                livro.Titulo = l.Titulo;
+                _context.SaveChanges();
+            }
         }
+
+        public async Task ExcluirAsync(int id)
+{
+    Livro livro = await _context.Livros.FindAsync(id);
+    if (livro != null)
+    {
+        _context.Livros.Remove(livro);
+        await _context.SaveChangesAsync();
+    }
+}
 
         public ICollection<Livro> ListarTodos(FiltrosLivros filtro = null)
         {
@@ -41,11 +54,7 @@ namespace Biblioteca.Models
 
                     case "Titulo":
                         query = query.Where(l => l.Titulo.Contains(filtro.Filtro));
-                        break;                    
-
-                    default:
-                        
-                        break;
+                        break;                   
                 }
             }
 
@@ -54,9 +63,7 @@ namespace Biblioteca.Models
 
         public ICollection<Livro> ListarDisponiveis()
         {
-            return _context.Livros
-                .Where(l => !(_context.Emprestimos.Where(e => e.Devolvido == false).Select(e => e.LivroId).Contains(l.Id)))
-                .ToList();
+            return _context.Livros.ToList();
         }
 
         public Livro ObterPorId(int id)
