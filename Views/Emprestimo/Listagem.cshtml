@@ -34,6 +34,7 @@
                         <th>Data Devolução</th>
                         <th>Livro</th>
                         <th>Autor</th>
+                        <th>Telefone</th>
                         <th>Devolvido</th> 
                         <th>Ações</th>
                     </tr>
@@ -49,6 +50,7 @@
     <td style="@(IsDataDevolucaoExpired(e) ? "background-color: #ff9999; font-weight: bold;" : "")">@GetFormattedDataDevolucao(e)</td>
     <td>@(e.Livro != null ? e.Livro.Titulo : "")</td>
     <td>@(e.Livro != null ? e.Livro.Autor : "")</td>
+    <td style="white-space: nowrap; width: 140px;">@e.Telefone</td>
     <td>
         <div class="form-check form-switch">
             <input type="checkbox" class="form-check-input checkboxDevolvido"
